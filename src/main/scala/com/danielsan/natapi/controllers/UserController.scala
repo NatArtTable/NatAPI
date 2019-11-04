@@ -8,26 +8,25 @@ import io.finch._
 import shapeless.{:+:, CNil}
 
 class UserController(service: UserService) {
-  private val getUserById: Endpoint[UserResource.Private] = get(authenticated :: "user" :: path[Long]) { (payload: Payload, id: Long) =>
+
+  private def getUserByIdGeneric(payload: Payload, id: Long) = {
     service.getById(id)(payload) map {
       case Left(user) => Ok(user)
       case Right(ex) =>
         ex match {
-          case ex: Service.NotFoundException         => NotFound(ex)
-          case ex: Service.PermissionDeniedException => Unauthorized(ex)
+          case e: Service.NotFoundException         => NotFound(new Exception("User not found!"))
+          case e: Service.PermissionDeniedException => Unauthorized(new Exception("permission denied!"))
+          case e: Service.Exception                 => InternalServerError(new Exception("Internal Server Error, Oops!"))
         }
     }
   }
 
+  private val getUserById: Endpoint[UserResource.Private] = get(authenticated :: "user" :: path[Long]) { (payload: Payload, id: Long) =>
+    getUserByIdGeneric(payload, id)
+  }
+
   private val getUser: Endpoint[UserResource.Private] = get(authenticated :: "user") { payload: Payload =>
-    service.getById(payload.id)(payload) map {
-      case Left(user) => Ok(user)
-      case Right(ex) =>
-        ex match {
-          case ex: Service.NotFoundException         => NotFound(ex)
-          case ex: Service.PermissionDeniedException => Unauthorized(ex)
-        }
-    }
+    getUserByIdGeneric(payload, payload.id)
   }
 
   def getEndpoints: Endpoint[UserResource.Private :+: UserResource.Private :+: CNil] = (getUserById :+: getUser).handle {

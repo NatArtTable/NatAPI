@@ -9,7 +9,7 @@ import com.danielsan.natapi.controllers._
 import com.danielsan.natapi.repositories._
 import com.danielsan.natapi.services._
 
-trait Service {
+trait Configuration {
   private implicit val conf: Config = ConfigFactory.load()
 
   // Database Configuration
@@ -25,11 +25,12 @@ trait Service {
   //Loading Services
   protected implicit val authService: AuthService = new AuthServiceImpl(userRepository)
   protected implicit val userService: UserService = new UserServiceImpl(userRepository)
+  protected implicit val imageService: ImageService = new ImageServiceImpl(imageRepository)
 
   //Loading Controllers
   protected val userController = new UserController(userService)
   protected val authController = new AuthController(authService)
-  protected val imageController = new ImageController(imageRepository)
+  protected val imageController = new ImageController(imageService)
 
   // Loading the api
   protected lazy val api = userController.getEndpoints :+: imageController.getEndpoints :+: authController.getEndpoints

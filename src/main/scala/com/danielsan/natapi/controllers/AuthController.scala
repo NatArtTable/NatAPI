@@ -12,8 +12,9 @@ class AuthController(service: AuthService) {
         case Left(token) => Ok(token)
         case Right(ex) =>
           ex match {
-            case e: Service.NotFoundException         => NotFound(e)
-            case e: Service.PermissionDeniedException => Forbidden(e)
+            case e: Service.NotFoundException         => NotFound(new Exception("User not found!"))
+            case e: Service.PermissionDeniedException => Forbidden(new Exception("Forbidden! Check your credentials"))
+            case e: Service.Exception                 => InternalServerError(new Exception("Oops! Internal Server Error"))
           }
       }
     }

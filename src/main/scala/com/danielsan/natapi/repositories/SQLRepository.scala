@@ -33,6 +33,7 @@ abstract class SQLRepositoryImpl[ModelType](implicit client: Client) extends SQL
   private def formatValueToQuery(value: Any): String = {
     value match {
       case v: Int    => v.toString
+      case v: Long   => v.toString
       case v: String => if (v.contains('\'')) { throw new IllegalArgumentException("value string cannot contains '") } else { s"\'$v\'" }
       case _         => throw new IllegalArgumentException("value should be of a supported type: (Int, String)")
     }

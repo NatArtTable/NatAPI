@@ -9,7 +9,7 @@ import io.finch.Application
 import io.circe.generic.auto._
 import io.finch.circe._
 
-object NatServer extends Service with TwitterServer {
+object NatServer extends Configuration with TwitterServer {
   // Loading Configuration file
   implicit val conf: Config = ConfigFactory.load()
   private val port = conf.getInt("api.port")

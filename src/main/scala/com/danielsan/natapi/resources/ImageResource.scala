@@ -2,8 +2,18 @@ package com.danielsan.natapi.resources
 
 import com.danielsan.natapi.models.Image
 
-case class ImageResource(uri: String, description: String, tags: scala.Seq[String])
-
 object ImageResource {
-  def apply(image: Image): ImageResource = ImageResource(image.uri, image.description, image.tags)
+
+  case class Small(uri: String)
+  object Small {
+    def apply(image: Image): Small = Small(image.uri)
+  }
+
+  case class Full(uri: String, description: String, tags: scala.Seq[String])
+  object Full {
+    def apply(image: Image): Full = Full(image.uri, image.description, image.tags)
+  }
+
+  case class Create(base64enconded: String, description: String, tags: scala.Seq[String])
+
 }

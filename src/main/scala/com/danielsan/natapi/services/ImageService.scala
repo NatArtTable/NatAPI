@@ -2,15 +2,16 @@ package com.danielsan.natapi.services
 
 import java.util.Base64
 
+import com.danielsan.natapi.models.Image
 import com.danielsan.natapi.repositories.ImageRepository
 import com.danielsan.natapi.resources.AuthResource.Payload
-import com.danielsan.natapi.resources.ImageResource
+import com.danielsan.natapi.resources.{CreatedResource, ImageResource}
 import com.twitter.util.Future
 
 trait ImageService {
   def getById(id: Long)(implicit payload: Payload): Future[Either[ImageResource.Full, Service.Exception]]
   def getAll()(implicit payload: Payload): Future[Either[Seq[ImageResource.Small], Service.Exception]]
-//  def addImage(image: Base64)(implicit payload: Payload): Future[Either[ImageResource, Service.Exception]]
+  def createImage(image: ImageResource.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]]
 }
 
 class ImageServiceImpl(repository: ImageRepository) extends ImageService {
@@ -30,7 +31,10 @@ class ImageServiceImpl(repository: ImageRepository) extends ImageService {
     }
   }
 
-//  override def addImage(image: Base64)(implicit payload: Payload): Future[Either[ImageResource, Service.Exception]] = {
-//    repository.
-//  }
+  override def createImage(image: ImageResource.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]] = {
+    val newImage = Image.New(image.description, image.tags, payload.id)
+    repository.create(newImage) map { result =>
+      Left(CreatedResource(1))
+    }
+  }
 }

@@ -1,12 +1,17 @@
 package com.danielsan.natapi.controllers
 
+import io.finch.{Endpoint, Forbidden, InternalServerError, NotFound, Ok, jsonBody, post}
+import io.finch.circe._
+import io.circe.generic.auto._
+
 import com.danielsan.natapi.resources.AuthResource
+import com.danielsan.natapi.resources.AuthResource.Credential
 import com.danielsan.natapi.services.{AuthService, Service}
-import io.finch.{Endpoint, Forbidden, InternalServerError, NotFound, Ok, post}
 
 class AuthController(service: AuthService) {
+  private val acceptedCredential: Endpoint[Credential] = jsonBody[Credential]
 
-  private val auth: Endpoint[AuthResource.Token] = post("auth" :: AuthResource.acceptedCredential) { c: AuthResource.Credential =>
+  private val auth: Endpoint[AuthResource.Token] = post("auth" :: acceptedCredential) { c: AuthResource.Credential =>
     {
       service.login(c) map {
         case Left(token) => Ok(token)

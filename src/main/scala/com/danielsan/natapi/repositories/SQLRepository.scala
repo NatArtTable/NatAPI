@@ -11,6 +11,8 @@ trait SQLRepository[ModelType] {
   protected def RowToModelType(row: Row): ModelType
   protected def loadQueryFromFile(filename: String): String
 
+  protected def formatValueToQuery(value: Any): String
+
   def prepare(): Future[Result]
   def getById(id: Long): Future[Option[ModelType]]
   def getAll(): Future[Seq[ModelType]]
@@ -30,7 +32,7 @@ abstract class SQLRepositoryImpl[ModelType](implicit client: Client) extends SQL
     client.select(s"SELECT * FROM $tableName WHERE $tableName.id = $id LIMIT 1")(RowToModelType) map (_.headOption)
   }
 
-  private def formatValueToQuery(value: Any): String = {
+  override protected def formatValueToQuery(value: Any): String = {
     value match {
       case v: Int    => v.toString
       case v: Long   => v.toString

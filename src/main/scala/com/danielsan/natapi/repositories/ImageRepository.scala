@@ -4,7 +4,9 @@ import com.danielsan.natapi.models.Image
 import com.twitter.finagle.mysql.{Client, LongValue, Result, Row, StringValue}
 import com.twitter.util.Future
 
-trait ImageRepository extends SQLRepository[Image] {}
+trait ImageRepository extends SQLRepository[Image] {
+  def create(newImage: Image.New): Future[Result]
+}
 
 class ImageRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[Image] with ImageRepository {
   val tableName = "tb_images"
@@ -24,5 +26,11 @@ class ImageRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[Ima
     val LongValue(owner_id) = row("owner_id").get
 
     Image(id, description, tags.split(','), original_uri, url, owner_id)
+  }
+
+  override def create(newImage: Image.New): Future[Result] = {
+    val tagString = newImage.tags.mkString(",")
+
+    client.query(s"INSERT INTO $tableName (description,tags,owner_id) VALUES (${formatValueToQuery(newImage.description)}, ${formatValueToQuery(tagString)}, ${formatValueToQuery(newImage.owner_id)})")
   }
 }

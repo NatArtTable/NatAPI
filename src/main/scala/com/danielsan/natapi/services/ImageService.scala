@@ -33,8 +33,8 @@ class ImageServiceImpl(repository: ImageRepository) extends ImageService {
 
   override def createImage(image: ImageResource.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]] = {
     val newImage = Image.New(image.description, image.tags, payload.id)
-    repository.create(newImage) map { result =>
-      Left(CreatedResource(1))
+    repository.create(newImage) map { created =>
+      Left(CreatedResource(created))
     }
   }
 }

@@ -4,9 +4,9 @@ import com.danielsan.natapi.models.Image
 
 object ImageResource {
 
-  case class Small(uri: String)
+  case class Small(id: Long, uri: String)
   object Small {
-    def apply(image: Image): Small = Small(image.uri)
+    def apply(image: Image): Small = Small(image.id, image.uri)
   }
 
   case class Full(uri: String, description: String, tags: scala.Seq[String])

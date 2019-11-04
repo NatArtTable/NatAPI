@@ -2,7 +2,7 @@ name := "NatAPI"
 
 version := "0.1"
 
-scalaVersion := "2.11.12"
+scalaVersion := "2.12.8"
 
 lazy val finchVersion = "0.16.0-M1"
 lazy val circeVersion = "0.8.0"

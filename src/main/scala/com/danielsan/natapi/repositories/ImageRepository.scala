@@ -11,7 +11,7 @@ class ImageRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[Ima
 
   private val query = loadQueryFromFile("CreateImageTable.sql")
 
-  def prepare(): Future[Result] = {
+  override def prepare(): Future[Result] = {
     client.query(query)
   }
 

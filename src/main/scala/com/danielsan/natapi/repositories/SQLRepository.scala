@@ -8,6 +8,8 @@ import scala.io.Source
 trait SQLRepository[ModelType] {
   val tableName: String
 
+  def prepare(): Future[Result]
+
   protected def RowToModelType(row: Row): ModelType
 
   protected def loadQueryFromFile(filename: String): String
@@ -17,8 +19,6 @@ trait SQLRepository[ModelType] {
 }
 
 abstract class SQLRepositoryImpl[ModelType](implicit client: Client) extends SQLRepository[ModelType] {
-
-  def prepare(): Future[Result]
 
   override def loadQueryFromFile(filename: String): String = {
     val createTableSQLFileStream = getClass.getResourceAsStream(s"/sqls/$filename")

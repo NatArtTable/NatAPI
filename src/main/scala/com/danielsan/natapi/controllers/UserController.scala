@@ -19,7 +19,7 @@ class UserController(service: UserService) {
     }
   }
 
-  private val getUser: Endpoint[UserResource.Private] = get(authenticated :: "user") { (payload: Payload) =>
+  private val getUser: Endpoint[UserResource.Private] = get(authenticated :: "user") { payload: Payload =>
     service.getById(payload.id)(payload) map {
       case Left(user) => Ok(user)
       case Right(ex) =>

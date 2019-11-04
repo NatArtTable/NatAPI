@@ -3,7 +3,7 @@ package com.danielsan.natapi.controllers
 import com.danielsan.natapi.endpoints.Authenticated._
 import com.danielsan.natapi.resources.UserResource
 import com.danielsan.natapi.resources.AuthResource.Payload
-import com.danielsan.natapi.services.UserService
+import com.danielsan.natapi.services.{Service, UserService}
 import io.finch._
 import shapeless.{:+:, CNil}
 
@@ -13,8 +13,8 @@ class UserController(service: UserService) {
       case Left(user) => Ok(user)
       case Right(ex) =>
         ex match {
-          case ex: UserService.NotFoundException         => NotFound(ex)
-          case ex: UserService.PermissionDeniedException => Unauthorized(ex)
+          case ex: Service.NotFoundException         => NotFound(ex)
+          case ex: Service.PermissionDeniedException => Unauthorized(ex)
         }
     }
   }
@@ -24,8 +24,8 @@ class UserController(service: UserService) {
       case Left(user) => Ok(user)
       case Right(ex) =>
         ex match {
-          case ex: UserService.NotFoundException         => NotFound(ex)
-          case ex: UserService.PermissionDeniedException => Unauthorized(ex)
+          case ex: Service.NotFoundException         => NotFound(ex)
+          case ex: Service.PermissionDeniedException => Unauthorized(ex)
         }
     }
   }

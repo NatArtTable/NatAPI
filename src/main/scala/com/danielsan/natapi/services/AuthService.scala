@@ -6,16 +6,17 @@ import com.danielsan.natapi.resources.AuthResource._
 import com.twitter.util.Future
 
 object AuthService {
-  sealed abstract class Exception(msg: String) extends scala.Exception(msg)
-  class WrongPasswordException(msg: String) extends Exception(msg)
-  class UserNotFoundException(msg: String) extends Exception(msg)
-  class InvalidPayloadException(msg: String) extends Exception(msg)
+  final class WrongPasswordException(msg: String) extends Service.PermissionDeniedException(msg)
 }
 
-class AuthService(repository: UserRepository) {
-  def login(c: Credential): Future[Either[Token, Exception]] = {
+trait AuthService {
+  def login(c: Credential): Future[Either[Token, Service.Exception]]
+}
 
-    repository.getByEmail(c.email) map {
+class AuthServiceImpl(repository: UserRepository) extends AuthService {
+  override def login(c: Credential): Future[Either[Token, Service.Exception]] = {
+
+    repository.filter("email", c.email, limit = 1) map (_.headOption) map {
       case Some(user) => {
         if (user.password == c.password) {
           val payload = Payload(user)
@@ -23,10 +24,10 @@ class AuthService(repository: UserRepository) {
 
           Left(Token(token))
         } else {
-          Right(new AuthService.WrongPasswordException("Wrong password!"))
+          Right(new Service.PermissionDeniedException("Wrong password!"))
         }
       }
-      case None => Right(new AuthService.UserNotFoundException("User not found!"))
+      case None => Right(new Service.NotFoundException("User not found!"))
     }
   }
 }

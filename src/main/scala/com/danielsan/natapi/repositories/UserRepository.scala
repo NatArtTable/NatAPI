@@ -4,9 +4,7 @@ import com.danielsan.natapi.models.User
 import com.twitter.finagle.mysql.{Client, LongValue, Result, Row, StringValue}
 import com.twitter.util.Future
 
-trait UserRepository extends SQLRepository[User] {
-  def getByEmail(email: String): Future[Option[User]]
-}
+trait UserRepository extends SQLRepository[User] {}
 
 class UserRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[User] with UserRepository {
   val tableName = "tb_users"
@@ -24,10 +22,6 @@ class UserRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[User
     val StringValue(password) = row("password").get
 
     User(id, name, email, password)
-  }
-
-  override def getByEmail(email: String): Future[Option[User]] = {
-    client.select(s"SELECT * FROM $tableName WHERE $tableName.email = '$email'")(RowToModelType) map (_.headOption)
   }
 
 }

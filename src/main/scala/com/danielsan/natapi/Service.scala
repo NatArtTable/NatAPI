@@ -3,12 +3,11 @@ package com.danielsan.natapi
 import com.twitter.finagle.Mysql
 import com.twitter.finagle.mysql.{Client, Cursors, Result, Transactions}
 import com.twitter.util.Await
-
 import com.typesafe.config.{Config, ConfigFactory}
 
-import com.danielsan.natapi.controllers.{AuthController, ImageController, UserController}
-import com.danielsan.natapi.repositories.{ImageRepository, ImageRepositoryImpl, UserRepository, UserRepositoryImpl}
-import com.danielsan.natapi.services.{AuthService, UserService}
+import com.danielsan.natapi.controllers._
+import com.danielsan.natapi.repositories._
+import com.danielsan.natapi.services._
 
 trait Service {
   private implicit val conf: Config = ConfigFactory.load()
@@ -24,8 +23,8 @@ trait Service {
   protected implicit val imageRepository: ImageRepository = new ImageRepositoryImpl()
 
   //Loading Services
-  protected implicit val authService: AuthService = new AuthService(userRepository)
-  protected implicit val userService: UserService = new UserService(userRepository)
+  protected implicit val authService: AuthService = new AuthServiceImpl(userRepository)
+  protected implicit val userService: UserService = new UserServiceImpl(userRepository)
 
   //Loading Controllers
   protected val userController = new UserController(userService)

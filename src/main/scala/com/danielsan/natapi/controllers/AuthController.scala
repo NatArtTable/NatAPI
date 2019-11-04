@@ -1,8 +1,8 @@
 package com.danielsan.natapi.controllers
 
 import com.danielsan.natapi.resources.AuthResource
-import com.danielsan.natapi.services.AuthService
-import io.finch.{Endpoint, Forbidden, NotFound, Ok, post, InternalServerError}
+import com.danielsan.natapi.services.{AuthService, Service}
+import io.finch.{Endpoint, Forbidden, InternalServerError, NotFound, Ok, post}
 
 class AuthController(service: AuthService) {
 
@@ -12,8 +12,8 @@ class AuthController(service: AuthService) {
         case Left(token) => Ok(token)
         case Right(ex) =>
           ex match {
-            case e: AuthService.UserNotFoundException  => NotFound(e)
-            case e: AuthService.WrongPasswordException => Forbidden(e)
+            case e: Service.NotFoundException         => NotFound(e)
+            case e: Service.PermissionDeniedException => Forbidden(e)
           }
       }
     }

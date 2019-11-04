@@ -5,15 +5,12 @@ import com.danielsan.natapi.repositories.UserRepository
 import com.danielsan.natapi.resources.AuthResource._
 import com.twitter.util.Future
 
-object AuthService {
-  final class WrongPasswordException(msg: String) extends Service.PermissionDeniedException(msg)
-}
-
 trait AuthService {
   def login(c: Credential): Future[Either[Token, Service.Exception]]
+  def auth(h: String): Either[Payload, Exception]
 }
 
-class AuthServiceImpl(repository: UserRepository) extends AuthService {
+class AuthServiceImpl(implicit val repository: UserRepository) extends AuthService {
   override def login(c: Credential): Future[Either[Token, Service.Exception]] = {
 
     repository.filter("email", c.email, limit = 1) map (_.headOption) map {
@@ -28,6 +25,18 @@ class AuthServiceImpl(repository: UserRepository) extends AuthService {
         }
       }
       case None => Right(new Service.NotFoundException("User not found!"))
+    }
+  }
+
+  override def auth(h: String): Either[Payload, Exception] = {
+    if (h == null) Right(new Service.MissingParameterException("Missing payload!"))
+    else {
+      try {
+        val decrypted = Crypto.decrypt(h)
+        Left(PayloadSerializer.deserialize(decrypted))
+      } catch {
+        case e: Exception => Right(new Service.PermissionDeniedException(e.getMessage))
+      }
     }
   }
 }

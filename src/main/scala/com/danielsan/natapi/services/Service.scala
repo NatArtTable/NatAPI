@@ -5,4 +5,6 @@ object Service {
   class InternalServerError(msg: String) extends Exception(msg)
   class PermissionDeniedException(msg: String) extends Exception(msg)
   class NotFoundException(msg: String) extends Exception(msg)
+  class InvalidParametersException(msg: String) extends Exception(msg)
+  class MissingParameterException(msg: String) extends InvalidParametersException(msg: String)
 }

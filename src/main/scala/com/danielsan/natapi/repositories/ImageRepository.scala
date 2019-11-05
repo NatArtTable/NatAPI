@@ -1,22 +1,14 @@
 package com.danielsan.natapi.repositories
 
-import java.nio.file.Paths
-import java.util.UUID
-
 import com.twitter.finagle.mysql.{Client, EmptyValue, LongValue, OK, Result, Row, StringValue}
 import com.twitter.util.Future
 import com.danielsan.natapi.models.{Created, Image}
-import com.typesafe.config.{Config, ConfigFactory}
 
 trait ImageRepository extends SQLRepository[Image] {
   def create(newImage: Image.New): Future[Created]
 }
 
-class ImageRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[Image] with ImageRepository {
-
-  private implicit val conf: Config = ConfigFactory.load()
-  private val imagesRootFolder = conf.getString("images.folder")
-
+class ImageRepositoryImpl(implicit client: Client, implicit val fileRepository: FileRepository) extends SQLRepositoryImpl[Image] with ImageRepository {
   val tableName = "tb_images"
   private val query = loadQueryFromFile("CreateImageTable.sql")
 
@@ -48,21 +40,16 @@ class ImageRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[Ima
   }
 
   override def prepare(): Future[Result] = {
-    Paths.get(imagesRootFolder).toFile.mkdirs()
     client.query(query)
   }
 
   override def create(newImage: Image.New): Future[Created] = {
-    val uuid = UUID.randomUUID().toString()
-
-    val path = Paths.get(imagesRootFolder, s"$uuid.${newImage.file.fileType.extension}")
-    newImage.file.saveToDisk(path)
-    val uri = path.toUri.toString
+    val uri = fileRepository.save(newImage.file)
 
     val tagString = newImage.tags.mkString(",")
 
     client.query(s"""INSERT INTO $tableName (uri,description,tags,owner_id) 
-    VALUES (${formatValueToQuery(uri)},
+    VALUES (${formatValueToQuery(uri.toString)},
         ${formatValueToQuery(newImage.description)}, 
         ${formatValueToQuery(tagString)}, 
         ${formatValueToQuery(newImage.owner_id)})

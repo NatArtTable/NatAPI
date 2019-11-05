@@ -18,7 +18,11 @@ trait Configuration {
     .withDatabase(conf.getString("mysql.db"))
     .newRichClient("%s:%d".format(conf.getString("mysql.host"), conf.getInt("mysql.port")))
 
+  // File storage configuration
+  private val imagesRootFolder = conf.getString("images.folder")
+
   // Loading repositories
+  protected implicit val fileRepository: FileRepository = new FileRepositoryImpl(imagesRootFolder)
   protected implicit val userRepository: UserRepository = new UserRepositoryImpl()
   protected implicit val imageRepository: ImageRepository = new ImageRepositoryImpl()
 
@@ -38,7 +42,7 @@ trait Configuration {
   // Loading the api
   protected lazy val api = userController.getEndpoints :+: imageController.getEndpoints :+: authController.getEndpoints
 
-  protected def prepare(): Seq[Result] = {
-    Seq(Await.result(userRepository.prepare()), Await.result(imageRepository.prepare()))
+  protected def prepare(): Seq[Any] = {
+    Seq(Await.result(fileRepository.prepare()), Await.result(userRepository.prepare()), Await.result(imageRepository.prepare()))
   }
 }

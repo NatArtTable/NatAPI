@@ -5,7 +5,6 @@ import com.danielsan.natapi.resources.UserResource
 import com.danielsan.natapi.resources.AuthResource.Payload
 import com.danielsan.natapi.services.UserService
 import io.finch._
-import shapeless.{:+:, CNil}
 
 class UserController(implicit val service: UserService, implicit val authentication: Authentication) extends Controller {
 
@@ -24,7 +23,7 @@ class UserController(implicit val service: UserService, implicit val authenticat
     getUserByIdGeneric(payload, payload.id)
   }
 
-  def getEndpoints: Endpoint[UserResource.Generic :+: UserResource.Generic :+: CNil] = (getUserById :+: getUser).handle {
+  def getEndpoints = (getUserById :+: getUser).handle {
     case e: Exception => InternalServerError(e)
   }
 }

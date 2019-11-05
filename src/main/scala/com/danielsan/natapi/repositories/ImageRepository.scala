@@ -1,21 +1,24 @@
 package com.danielsan.natapi.repositories
 
-import com.danielsan.natapi.models.{Created, Image}
+import java.nio.file.Paths
+import java.util.UUID
+
 import com.twitter.finagle.mysql.{Client, EmptyValue, LongValue, OK, Result, Row, StringValue}
 import com.twitter.util.Future
+import com.danielsan.natapi.models.{Created, Image}
+import com.typesafe.config.{Config, ConfigFactory}
 
 trait ImageRepository extends SQLRepository[Image] {
   def create(newImage: Image.New): Future[Created]
 }
 
 class ImageRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[Image] with ImageRepository {
+
+  private implicit val conf: Config = ConfigFactory.load()
+  private val imagesRootFolder = conf.getString("images.folder")
+
   val tableName = "tb_images"
-
   private val query = loadQueryFromFile("CreateImageTable.sql")
-
-  override def prepare(): Future[Result] = {
-    client.query(query)
-  }
 
   override def RowToModelType(row: Row): Image = {
     val LongValue(id) = row("id").get
@@ -44,12 +47,27 @@ class ImageRepositoryImpl(implicit client: Client) extends SQLRepositoryImpl[Ima
     Image(id, description, tags.split(','), original_uri, uri, owner_id)
   }
 
+  override def prepare(): Future[Result] = {
+    Paths.get(imagesRootFolder).toFile.mkdirs()
+    client.query(query)
+  }
+
   override def create(newImage: Image.New): Future[Created] = {
+    val uuid = UUID.randomUUID().toString()
+
+    val path = Paths.get(imagesRootFolder, s"$uuid.${newImage.file.fileType.extension}")
+    newImage.file.saveToDisk(path)
+    val uri = path.toUri.toString
+
     val tagString = newImage.tags.mkString(",")
 
-    client.query(s"INSERT INTO $tableName (description,tags,owner_id) VALUES (${formatValueToQuery(newImage.description)}, ${formatValueToQuery(tagString)}, ${formatValueToQuery(newImage.owner_id)})") map {
-      result =>
-        Created(result.asInstanceOf[OK].insertId)
+    client.query(s"""INSERT INTO $tableName (uri,description,tags,owner_id) 
+    VALUES (${formatValueToQuery(uri)},
+        ${formatValueToQuery(newImage.description)}, 
+        ${formatValueToQuery(tagString)}, 
+        ${formatValueToQuery(newImage.owner_id)})
+    """) map { result =>
+      Created(result.asInstanceOf[OK].insertId)
     }
   }
 }

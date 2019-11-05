@@ -20,7 +20,7 @@ class AuthController(implicit val service: AuthService) extends Controller {
     }
   }
 
-  def getEndpoints: Endpoint[AuthResource.Token] = auth.handle {
+  def getEndpoints = auth.handle {
     case e: Exception => InternalServerError(e)
   }
 }

@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `tb_images` (
     `description` varchar(300) NOT NULL DEFAULT '',
     `tags` varchar(300) NOT NULL DEFAULT '',
     `original_uri` varchar(300) NOT NULL DEFAULT '',
-    `uri` varchar(300) NOT NULL DEFAULT '',
+    `uri` varchar(300) NOT NULL,
     `owner_id` bigint(20) NOT NULL,
     `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `update_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

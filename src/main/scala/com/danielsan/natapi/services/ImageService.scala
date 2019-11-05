@@ -1,7 +1,6 @@
 package com.danielsan.natapi.services
 
-import java.util.Base64
-
+import com.danielsan.natapi.helpers.FileHandler
 import com.danielsan.natapi.models.Image
 import com.danielsan.natapi.repositories.ImageRepository
 import com.danielsan.natapi.resources.AuthResource.Payload
@@ -32,7 +31,10 @@ class ImageServiceImpl(implicit val repository: ImageRepository) extends ImageSe
   }
 
   override def createImage(image: ImageResource.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]] = {
-    val newImage = Image.New(image.description, image.tags, payload.id)
+    if (!Seq(FileHandler.JPEG, FileHandler.PNG).contains(image.file.fileType))
+      return Future { Right(new Service.InvalidParametersException("image type not supported. Supported image types: jpg, png.")) }
+
+    val newImage = Image.New(image.file, image.description.getOrElse(""), image.tags.getOrElse(Seq()), payload.id)
     repository.create(newImage) map { created =>
       Left(CreatedResource(created))
     }

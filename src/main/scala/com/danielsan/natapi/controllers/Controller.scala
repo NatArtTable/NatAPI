@@ -11,8 +11,9 @@ import io.finch.{BadRequest, Forbidden, InternalServerError, NotFound, Output}
 import com.danielsan.natapi.services.Service
 import com.danielsan.natapi.helpers
 import com.danielsan.natapi.helpers.FileHandler.FileType
+import com.danielsan.natapi.helpers.FutureConverters
 
-trait Controller {
+trait Controller extends FutureConverters {
   protected def exceptionToResponse(e: Exception): Output[Nothing] = {
     e match {
       case e: Service.NotFoundException          => NotFound(e)

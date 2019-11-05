@@ -1,5 +1,8 @@
 package com.danielsan.natapi.controllers
 
+import scala.concurrent.ExecutionContext
+import ExecutionContext.Implicits.global
+
 import io.finch.{Endpoint, InternalServerError, Ok, jsonBody, post}
 import io.finch.circe._
 import io.circe.generic.auto._
@@ -13,10 +16,12 @@ class AuthController(implicit val service: AuthService) extends Controller {
 
   private val auth: Endpoint[AuthResource.Token] = post("auth" :: acceptedCredential) { c: AuthResource.Credential =>
     {
-      service.login(c) map {
+      val result = service.login(c) map {
         case Left(token) => Ok(token)
         case Right(ex)   => exceptionToResponse(ex)
       }
+
+      result.asTwitter
     }
   }
 

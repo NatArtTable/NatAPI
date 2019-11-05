@@ -4,7 +4,9 @@ import com.danielsan.natapi.resources.UserResource
 import com.danielsan.natapi.repositories.UserRepository
 import com.danielsan.natapi.resources.AuthResource.Payload
 import com.danielsan.natapi.services
-import com.twitter.util.Future
+
+import scala.concurrent.{Future, ExecutionContext}
+import ExecutionContext.Implicits.global
 
 trait UserService {
   def getById(id: Long)(implicit payload: Payload): Future[Either[UserResource.Generic, Service.Exception]]

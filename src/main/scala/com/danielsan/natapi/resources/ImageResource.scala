@@ -16,5 +16,4 @@ object ImageResource {
   }
 
   case class Create(file: FileHandler, description: Option[String], tags: Option[Seq[String]])
-
 }

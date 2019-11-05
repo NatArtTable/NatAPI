@@ -3,7 +3,11 @@ package com.danielsan.natapi.services
 import com.danielsan.natapi.helpers.{Crypto, PayloadSerializer}
 import com.danielsan.natapi.repositories.UserRepository
 import com.danielsan.natapi.resources.AuthResource._
-import com.twitter.util.Future
+
+import scala.concurrent.{Future, ExecutionContext}
+import ExecutionContext.Implicits.global
+
+import scala.concurrent.Future
 
 trait AuthService {
   def login(c: Credential): Future[Either[Token, Service.Exception]]
@@ -13,7 +17,7 @@ trait AuthService {
 class AuthServiceImpl(implicit val repository: UserRepository) extends AuthService {
   override def login(c: Credential): Future[Either[Token, Service.Exception]] = {
 
-    repository.filter("email", c.email, limit = 1) map (_.headOption) map {
+    repository.getByEmail(c.email) map {
       case Some(user) => {
         if (user.password == c.password) {
           val payload = Payload(user)

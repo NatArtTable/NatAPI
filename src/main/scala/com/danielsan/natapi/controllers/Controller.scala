@@ -7,24 +7,11 @@ import java.nio.file.{Files, Path}
 import java.nio.file.StandardCopyOption._
 
 import com.twitter.finagle.http.exp.Multipart.{FileUpload, InMemoryFileUpload, OnDiskFileUpload}
-import io.finch.{BadRequest, Forbidden, InternalServerError, NotFound, Output}
+import io.finch.{BadRequest, Endpoint, Forbidden, InternalServerError, NotFound}
 import com.danielsan.natapi.services.Service
 import com.danielsan.natapi.helpers
 import com.danielsan.natapi.helpers.FileHandler.FileType
 import com.danielsan.natapi.helpers.FutureConverters
-
-trait Controller extends FutureConverters {
-  protected def exceptionToResponse(e: Exception): Output[Nothing] = {
-    e match {
-      case e: Service.NotFoundException          => NotFound(e)
-      case e: Service.PermissionDeniedException  => Forbidden(e)
-      case e: Service.InvalidParametersException => BadRequest(e)
-      case e: Service.Exception                  => InternalServerError(e)
-      case _                                     => InternalServerError(new Exception("Oops!"))
-
-    }
-  }
-}
 
 object Controller {
   class Exception(msg: String) extends scala.Exception(msg)
@@ -48,5 +35,18 @@ object Controller {
           fos.write(bytes)
       }
     }
+  }
+}
+
+trait Controller[A] extends FutureConverters {
+  protected def endpoints: Endpoint[A]
+
+  def getEndpoints: Endpoint[A] = endpoints.handle {
+    case e: Controller.InvalidParametersException => BadRequest(e)
+    case e: Service.NotFoundException             => NotFound(e)
+    case e: Service.PermissionDeniedException     => Forbidden(e)
+    case e: Service.InvalidParametersException    => BadRequest(e)
+    case e: Service.Exception                     => InternalServerError(e)
+    case _                                        => InternalServerError(new Exception("Oops!"))
   }
 }

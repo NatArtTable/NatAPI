@@ -39,7 +39,8 @@ class AuthServiceImpl(implicit val repository: UserRepository) extends AuthServi
         val decrypted = Crypto.decrypt(h)
         Left(PayloadSerializer.deserialize(decrypted))
       } catch {
-        case e: Exception => Right(new Service.PermissionDeniedException(e.getMessage))
+
+        case e: Exception => Right(new Service.PermissionDeniedException("Token invalido!"))
       }
     }
   }

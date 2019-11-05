@@ -11,21 +11,19 @@ import com.danielsan.natapi.resources.AuthResource
 import com.danielsan.natapi.resources.AuthResource.Credential
 import com.danielsan.natapi.services.AuthService
 
-class AuthController(implicit val service: AuthService) extends Controller {
+class AuthController(implicit val service: AuthService) extends Controller[AuthResource.Token] {
   private val acceptedCredential: Endpoint[Credential] = jsonBody[Credential]
 
   private val auth: Endpoint[AuthResource.Token] = post("auth" :: acceptedCredential) { c: AuthResource.Credential =>
     {
       val result = service.login(c) map {
         case Left(token) => Ok(token)
-        case Right(ex)   => exceptionToResponse(ex)
+        case Right(ex)   => throw ex
       }
 
       result.asTwitter
     }
   }
 
-  def getEndpoints = auth.handle {
-    case e: Exception => InternalServerError(e)
-  }
+  override protected def endpoints: Endpoint[AuthResource.Token] = auth
 }

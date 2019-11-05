@@ -28,6 +28,5 @@ libraryDependencies ++= Seq(
   "com.typesafe" % "config" % typesafeConfig,
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
-  "org.scalamock" %% "scalamock" % "4.4.0" % Test,
   "com.h2database" % "h2" % "1.4.200" % Test
 )

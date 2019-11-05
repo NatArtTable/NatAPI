@@ -1,26 +1,23 @@
 package com.danielsan.natapi
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
-
 import scala.concurrent.Await
 import scala.concurrent.duration._
-
 import com.typesafe.config.{Config, ConfigFactory}
-
 import com.danielsan.natapi.controllers._
 import com.danielsan.natapi.endpoints.{Authentication, AuthenticationImpl}
 import com.danielsan.natapi.models.DatabaseModels
 import com.danielsan.natapi.repositories._
 import com.danielsan.natapi.services._
 
-trait Configuration {
+abstract class Configuration(dbConfigRoot: String) {
   import slick.jdbc.MySQLProfile.api._
 
   private implicit val conf: Config = ConfigFactory.load()
 
   // Database Configuration
-  implicit val database = Database.forConfig("db")
+  implicit val database: Database = Database.forConfig(dbConfigRoot)
 
   // File storage configuration
   private val imagesRootFolder = conf.getString("images.folder")

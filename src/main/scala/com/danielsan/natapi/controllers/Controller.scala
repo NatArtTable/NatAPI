@@ -42,6 +42,7 @@ trait Controller[A] extends FutureConverters {
   protected def endpoints: Endpoint[A]
 
   def getEndpoints: Endpoint[A] = endpoints.handle {
+    case e: io.finch.Error                        => BadRequest(e)
     case e: Controller.InvalidParametersException => BadRequest(e)
     case e: Service.NotFoundException             => NotFound(e)
     case e: Service.PermissionDeniedException     => Forbidden(e)

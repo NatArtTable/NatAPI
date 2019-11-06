@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "com.twitter" %% "finagle-stats" % finagleVersion,
   "com.typesafe.slick" %% "slick" % slickVersion,
   "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
-  "mysql" % "mysql-connector-java" % "6.0.6",
+  "mysql" % "mysql-connector-java" % "8.0.18",
   "com.typesafe" % "config" % typesafeConfig,
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "org.scalatest" %% "scalatest" % scalaTestVersion % Test,

@@ -23,7 +23,6 @@ trait Implementation {
   protected implicit val database: Database = Database.forConfig("db")
   private val rootFolder = conf.getString("filer.rootFolder")
   private val prepareTimeout = conf.getInt("db_preparation.timeout").seconds
-  private val allowPreparationFailue = conf.getBoolean("db_preparation.allow_failure")
 
   // Loading repositories
   implicit val fileRepository: FileRepository = new FileRepositoryImpl(rootFolder)
@@ -49,20 +48,8 @@ trait Implementation {
   lazy val static = staticController.getEndpoints
 
   def prepare(): Unit = {
-    if (allowPreparationFailue) {
-      Await.result(fileRepository.prepare() recover {
-        case _: Exception => log.info("Failed to prepare file repository")
-      }, prepareTimeout)
-      Await.result(userRepository.prepare() recover {
-        case _: Exception => log.warn("Failed to prepare user repository")
-      }, prepareTimeout)
-      Await.result(imageRepository.prepare() recover {
-        case _: Exception => log.warn("Failed to prepare image repository")
-      }, prepareTimeout)
-    } else {
-      Await.result(fileRepository.prepare(), prepareTimeout)
-      Await.result(userRepository.prepare(), prepareTimeout)
-      Await.result(imageRepository.prepare(), prepareTimeout)
-    }
+    Await.result(fileRepository.prepare(), prepareTimeout)
+    Await.result(userRepository.prepare(), prepareTimeout)
+    Await.result(imageRepository.prepare(), prepareTimeout)
   }
 }

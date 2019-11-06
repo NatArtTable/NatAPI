@@ -14,8 +14,6 @@ object NatServer extends TwitterServer with Enconders with Implementation with M
   private implicit val conf: Config = ConfigFactory.load()
   private val port = conf.getInt("api.port")
 
-  prepare()
-
   def start(): Unit = {
     // Preparing the service
     val service = mimeTypeFilter andThen Bootstrap

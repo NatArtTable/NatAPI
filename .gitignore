@@ -31,3 +31,6 @@ build
 
 #general
 *.class
+
+# env file
+.env

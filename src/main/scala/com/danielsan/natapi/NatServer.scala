@@ -22,6 +22,7 @@ object NatServer extends TwitterServer with Enconders with Implementation with M
       .toService
 
     // serving HTTP
+    log.info(s"Serving application on PORT: $port")
     val server = Http.server
       .withStatsReceiver(statsReceiver)
       .serve(s":$port", service)

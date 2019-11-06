@@ -14,6 +14,8 @@ lazy val typesafeConfig = "1.3.1"
 
 lazy val scalaTestVersion = "3.0.1"
 
+mainClass in (Compile, run) := Some("com.danielsan.natapi.Main")
+
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
   "com.github.finagle" %% "finch-core" % finchVersion,

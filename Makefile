@@ -27,3 +27,4 @@ coverage: ## Run tests with coverage support and open the result in the browser
 
 build: ## Build with sbt-native-packager
 	sbt compile stage
+

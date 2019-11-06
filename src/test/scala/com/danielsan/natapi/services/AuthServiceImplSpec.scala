@@ -1,25 +1,18 @@
 package com.danielsan.natapi.services
 
-import com.danielsan.natapi.TestServer
 import com.danielsan.natapi.models.User
 import com.danielsan.natapi.resources.AuthResource.Credential
-import org.scalatest.{BeforeAndAfter, FunSpec}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class AuthServiceImplSpec extends FunSpec with BeforeAndAfter {
-  var server: TestServer = new TestServer(5.seconds)
+class AuthServiceImplSpec extends BaseSpec {
 
   before {
     server.prepare()
 
     server.addUser(User(-1, "daniel", "daniel@mail.com", "1234"))
     server.addUser(User(-1, "jujuba", "jujuba@mail.com", "senha"))
-  }
-
-  after {
-    server.tearDown()
   }
 
   describe("Testing login service") {

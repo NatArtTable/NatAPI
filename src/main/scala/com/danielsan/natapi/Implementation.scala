@@ -20,12 +20,12 @@ trait Implementation {
 
   // Configurations
   protected implicit val database: Database = Database.forConfig("db")
-  private val imagesRootFolder = conf.getString("images.folder")
+  private val rootFolder = conf.getString("filer.rootFolder")
   private val prepareTimeout = conf.getInt("db_preparation.timeout").seconds
   private val allowPreparationFailue = conf.getBoolean("db_preparation.allow_failure")
 
   // Loading repositories
-  implicit val fileRepository: FileRepository = new FileRepositoryImpl(imagesRootFolder)
+  implicit val fileRepository: FileRepository = new FileRepositoryImpl(rootFolder)
   implicit val userRepository: UserRepository = new UserRepositoryImpl()(database, DatabaseModels.users)
   implicit val imageRepository: ImageRepository = new ImageRepositoryImpl()(database, DatabaseModels.images, fileRepository)
 
@@ -41,9 +41,10 @@ trait Implementation {
   val userController = new UserController()
   val authController = new AuthController()
   val imageController = new ImageController()
+  val staticController = new StaticController()
 
   // Loading the api
-  lazy val api = userController.getEndpoints :+: imageController.getEndpoints :+: authController.getEndpoints
+  lazy val api = staticController.getEndpoints :+: userController.getEndpoints :+: imageController.getEndpoints :+: authController.getEndpoints
 
   def prepare(): Unit = {
     if (allowPreparationFailue) {

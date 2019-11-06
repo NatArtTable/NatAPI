@@ -3,7 +3,7 @@ package com.danielsan.natapi.controllers
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import io.finch._
-import com.danielsan.natapi.resources.{CreatedResource, ImageResource, SearchResource}
+import com.danielsan.natapi.resources.{CreatedResource, ImageResources, SearchResource}
 import com.danielsan.natapi.services.ImageService
 import com.danielsan.natapi.endpoints.Authentication
 import com.danielsan.natapi.resources.AuthResource.Payload
@@ -11,9 +11,9 @@ import com.twitter.finagle.http.exp.Multipart.FileUpload
 import shapeless.{:+:, CNil}
 
 class ImageController(implicit val service: ImageService, implicit val authentication: Authentication)
-    extends Controller[ImageResource.Full :+: SearchResource[ImageResource.Small] :+: CreatedResource :+: CNil] {
+    extends Controller[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: CreatedResource :+: CNil] {
 
-  private val getImage: Endpoint[ImageResource.Full] = get(authentication.authenticated :: "image" :: path[Long]) { (payload: Payload, id: Long) =>
+  private val getImage: Endpoint[ImageResources.Full] = get(authentication.authenticated :: "image" :: path[Long]) { (payload: Payload, id: Long) =>
     val result = service.getById(id)(payload) map ({
       case Left(image) => Ok(image)
       case Right(ex)   => throw ex
@@ -22,7 +22,7 @@ class ImageController(implicit val service: ImageService, implicit val authentic
     result.asTwitter
   }
 
-  private val getImages: Endpoint[SearchResource[ImageResource.Small]] = get(authentication.authenticated :: "images") { payload: Payload =>
+  private val getImages: Endpoint[SearchResource[ImageResources.Small]] = get(authentication.authenticated :: "images") { payload: Payload =>
     val result = service.getAll()(payload) map {
       case Left(images) => Ok(SearchResource(images))
       case Right(ex)    => throw ex
@@ -45,7 +45,7 @@ class ImageController(implicit val service: ImageService, implicit val authentic
           case None    => None
         }
 
-        val result = service.createImage(ImageResource.Create(new Controller.FileHandler(file), description, parsedTags))(payload) map {
+        val result = service.createImage(ImageResources.Create(new Controller.FileHandler(file), description, parsedTags))(payload) map {
           case Left(created) => Ok(created)
           case Right(ex)     => throw ex
         }
@@ -56,5 +56,5 @@ class ImageController(implicit val service: ImageService, implicit val authentic
     }
   }
 
-  override protected def endpoints: Endpoint[ImageResource.Full :+: SearchResource[ImageResource.Small] :+: CreatedResource :+: CNil] = getImage :+: getImages :+: uploadImage
+  override protected def endpoints: Endpoint[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: CreatedResource :+: CNil] = getImage :+: getImages :+: uploadImage
 }

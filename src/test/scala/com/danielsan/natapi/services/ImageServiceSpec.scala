@@ -2,7 +2,7 @@ package com.danielsan.natapi.services
 
 import com.danielsan.natapi.models._
 import com.danielsan.natapi.resources.AuthResource.Payload
-import com.danielsan.natapi.resources.ImageResource
+import com.danielsan.natapi.resources.ImageResources
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -29,7 +29,7 @@ class ImageServiceSpec extends BaseSpec {
       val result = Await.result(server.imageService.getById(danielImage.id)(Payload(daniel)), 5.seconds)
 
       assert(result.isLeft)
-      assert(result.left.get == ImageResource.Full(danielImage.id, "uri", "descricao", Seq("tag1", "tag2")))
+      assert(result.left.get == ImageResources.Full(danielImage.id, "uri", "descricao", Seq("tag1", "tag2")))
     }
 
     it("should return a PermissionDeniedException if a user tries to get a image of another user") {

@@ -1,11 +1,11 @@
 package com.danielsan.natapi.repositories
 
-import java.nio.file.Paths
+import java.nio.file.{Path, Paths}
 import java.util.UUID
 
 import com.danielsan.natapi.helpers.FileHandler
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
 
 trait FileRepository extends Repository {
@@ -13,7 +13,8 @@ trait FileRepository extends Repository {
     override def toString = uri
   }
 
-  def save(file: FileHandler): URI
+  def save(file: FileHandler, folder: String): (String, Future[Unit])
+  def load(path: Path): String
 }
 
 class FileRepositoryImpl(rootFolder: String) extends FileRepository {
@@ -22,12 +23,13 @@ class FileRepositoryImpl(rootFolder: String) extends FileRepository {
     Future { Paths.get(rootFolder).toFile.mkdirs() }
   }
 
-  override def save(file: FileHandler): URI = {
-    val uuid = UUID.randomUUID().toString
+  override def save(file: FileHandler, folder: String): (String, Future[Unit]) = {
+    val filename = s"${UUID.randomUUID().toString}.${file.fileType.extension}"
 
-    val path = Paths.get(rootFolder, s"$uuid.${file.fileType.extension}")
-    file.saveToDisk(path)
+    val path = Paths.get(rootFolder, folder, filename)
 
-    path.toUri.toString
+    (filename, file.saveToDisk(path))
   }
+
+  override def load(path: Path): String = { "1" }
 }

@@ -36,7 +36,7 @@ object DatabaseModels {
                                                                           original_uri: String,
                                                                           uri: String,
                                                                           owner_id: Long) => Image(id, description, tags_joined.split(","), original_uri, uri, owner_id)).tupled,
-        (image: Image) => Option(image.id, image.description, image.tags.mkString(","), image.original_uri, image.uri, image.owner_id)))
+        (image: Image) => Option(image.id, image.description, image.tags.mkString(","), image.original_uri, image.filename, image.owner_id)))
   }
 
   implicit val images: TableQuery[ImageRow] = TableQuery[ImageRow]

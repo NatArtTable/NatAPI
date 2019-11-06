@@ -6,10 +6,9 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.twitter.finagle.Http
 import com.twitter.server.TwitterServer
 import com.twitter.util.Await
-import io.finch.{Application, Bootstrap, Text}
+import io.finch.{Application, Bootstrap}
 import io.circe.generic.auto._
 import io.finch.circe._
-import shapeless.Witness
 
 object NatServer extends TwitterServer with Enconders with Implementation with MimeTypeFilter {
   private implicit val conf: Config = ConfigFactory.load()

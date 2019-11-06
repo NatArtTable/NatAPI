@@ -6,9 +6,9 @@ import ExecutionContext.Implicits.global
 import slick.jdbc.MySQLProfile.api._
 
 import DatabaseModels.ImageRow
-import com.danielsan.natapi.models.{Created, Image, ImageModels, User}
+import com.danielsan.natapi.models.{Created, Image, ImageModels}
 
-class ImageRepositoryImpl(implicit val db: Database, implicit val images: TableQuery[ImageRow], implicit val fileRepository: FileRepository) extends ImageRepository {
+class ImageRepositoryImpl(implicit db: Database, implicit val images: TableQuery[ImageRow], implicit val fileRepository: FileRepository) extends ImageRepository {
 
   override def prepare(): Future[Unit] = {
     db.run(images.schema.create)

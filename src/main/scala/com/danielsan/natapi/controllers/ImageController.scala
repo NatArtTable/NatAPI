@@ -10,7 +10,7 @@ import com.danielsan.natapi.resources.AuthResource.Payload
 import com.twitter.finagle.http.exp.Multipart.FileUpload
 import shapeless.{:+:, CNil}
 
-class ImageController(implicit val service: ImageService, implicit val authentication: Authentication)
+class ImageController(implicit service: ImageService, implicit val authentication: Authentication)
     extends Controller[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: CreatedResource :+: CNil] {
 
   private val getImage: Endpoint[ImageResources.Full] = get(authentication.authenticated :: "image" :: path[Long]) { (payload: Payload, id: Long) =>

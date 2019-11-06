@@ -9,7 +9,7 @@ import com.danielsan.natapi.resources.AuthResource.Payload
 import com.danielsan.natapi.services.UserService
 import shapeless.{:+:, CNil}
 
-class UserController(implicit val service: UserService, implicit val authentication: Authentication) extends Controller[UserResource.Generic :+: UserResource.Generic :+: CNil] {
+class UserController(implicit service: UserService, implicit val authentication: Authentication) extends Controller[UserResource.Generic :+: UserResource.Generic :+: CNil] {
 
   private def getUserByIdGeneric(payload: Payload, id: Long) = {
     service.getById(id)(payload) map {

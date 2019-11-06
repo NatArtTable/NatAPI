@@ -14,7 +14,7 @@ trait AuthService {
   def auth(h: String): Either[Payload, Exception]
 }
 
-class AuthServiceImpl(implicit val repository: UserRepository) extends AuthService {
+class AuthServiceImpl(implicit repository: UserRepository) extends AuthService {
   override def login(c: Credential): Future[Either[Token, Service.Exception]] = {
 
     repository.getByEmail(c.email) map {

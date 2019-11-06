@@ -15,7 +15,7 @@ trait ImageService {
   def createImage(image: ImageResources.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]]
 }
 
-class ImageServiceImpl(implicit val repository: ImageRepository) extends ImageService {
+class ImageServiceImpl(implicit repository: ImageRepository) extends ImageService {
   override def getById(id: Long)(implicit payload: Payload): Future[Either[ImageResources.Full, Service.Exception]] = {
     repository.getById(id) map {
       case Some(image) => {

@@ -11,7 +11,7 @@ import com.danielsan.natapi.resources.AuthResource
 import com.danielsan.natapi.resources.AuthResource.Credential
 import com.danielsan.natapi.services.AuthService
 
-class AuthController(implicit val service: AuthService) extends Controller[AuthResource.Token] {
+class AuthController(implicit service: AuthService) extends Controller[AuthResource.Token] {
   private val acceptedCredential: Endpoint[Credential] = jsonBody[Credential]
 
   private val auth: Endpoint[AuthResource.Token] = post("auth" :: acceptedCredential) { c: AuthResource.Credential =>

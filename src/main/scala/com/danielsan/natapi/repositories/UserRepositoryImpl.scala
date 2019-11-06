@@ -8,7 +8,7 @@ import slick.jdbc.MySQLProfile.api._
 import DatabaseModels.UserRow
 import com.danielsan.natapi.models.User
 
-class UserRepositoryImpl(implicit val db: Database, implicit val users: TableQuery[UserRow]) extends UserRepository {
+class UserRepositoryImpl(implicit db: Database, implicit val users: TableQuery[UserRow]) extends UserRepository {
 
   def prepare(): Future[Unit] = {
     db.run(users.schema.create)

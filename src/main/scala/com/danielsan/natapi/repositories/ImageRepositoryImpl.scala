@@ -5,7 +5,7 @@ import ExecutionContext.Implicits.global
 
 import slick.jdbc.MySQLProfile.api._
 
-import com.danielsan.natapi.models.DatabaseModels.ImageRow
+import DatabaseModels.ImageRow
 import com.danielsan.natapi.models.{Created, Image, ImageModels, User}
 
 class ImageRepositoryImpl(implicit val db: Database, implicit val images: TableQuery[ImageRow], implicit val fileRepository: FileRepository) extends ImageRepository {

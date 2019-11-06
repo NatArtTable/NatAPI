@@ -5,7 +5,7 @@ import ExecutionContext.Implicits.global
 
 import slick.jdbc.MySQLProfile.api._
 
-import com.danielsan.natapi.models.DatabaseModels.UserRow
+import DatabaseModels.UserRow
 import com.danielsan.natapi.models.User
 
 class UserRepositoryImpl(implicit val db: Database, implicit val users: TableQuery[UserRow]) extends UserRepository {

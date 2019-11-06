@@ -8,19 +8,26 @@ import com.twitter.util.Await
 import io.finch.Application
 import io.circe.generic.auto._
 import io.finch.circe._
+import slick.jdbc.MySQLProfile.api.Database
 
-object NatServer extends Configuration("db") with TwitterServer with Enconders {
-  // Loading Configuration file
-  implicit val conf: Config = ConfigFactory.load()
+import scala.concurrent.duration._
+
+object NatServer extends TwitterServer with Enconders {
+  private implicit val conf: Config = ConfigFactory.load()
   private val port = conf.getInt("api.port")
 
-  prepare()
+  // Database Configuration
+  implicit val database: Database = Database.forConfig("db")
+
+  private val impl = new Implementation(database, conf.getString("images.folder"), conf.getInt("timeouts.preparation").seconds)
+
+  impl.prepare()
 
   def start(): Unit = {
     // Preparing the server
     val server = Http.server
       .withStatsReceiver(statsReceiver)
-      .serve(s":$port", api.toServiceAs[Application.Json])
+      .serve(s":$port", impl.api.toServiceAs[Application.Json])
     closeOnExit(server)
 
     // Starting server

@@ -1,7 +1,9 @@
-package com.danielsan.natapi.models
+package com.danielsan.natapi.repositories
 
 import slick.jdbc.MySQLProfile.api._
 import slick.lifted.ProvenShape
+
+import com.danielsan.natapi.models._
 
 object DatabaseModels {
 
@@ -16,10 +18,7 @@ object DatabaseModels {
 
   implicit val users: TableQuery[UserRow] = TableQuery[UserRow]
 
-  class ImageRow(tag: Tag)
-      extends Table[Image](tag,
-                           "tb_images" +
-                             "") {
+  class ImageRow(tag: Tag) extends Table[Image](tag, "tb_images" + "") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def description = column[String]("description")
     protected def tags_joined = column[String]("tags")

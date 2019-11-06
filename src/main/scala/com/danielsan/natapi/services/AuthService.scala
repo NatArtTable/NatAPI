@@ -4,7 +4,7 @@ import com.danielsan.natapi.helpers.{Crypto, PayloadSerializer}
 import com.danielsan.natapi.repositories.UserRepository
 import com.danielsan.natapi.resources.AuthResource._
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 
 import scala.concurrent.Future

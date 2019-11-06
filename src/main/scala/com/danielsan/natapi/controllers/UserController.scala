@@ -7,9 +7,11 @@ import com.danielsan.natapi.endpoints.Authentication
 import com.danielsan.natapi.resources.UserResource
 import com.danielsan.natapi.resources.AuthResource.Payload
 import com.danielsan.natapi.services.UserService
+import org.slf4j.LoggerFactory
 import shapeless.{:+:, CNil}
 
 class UserController(implicit service: UserService, implicit val authentication: Authentication) extends Controller[UserResource.Generic :+: UserResource.Generic :+: CNil] {
+  private val log = LoggerFactory.getLogger(this.getClass)
 
   private def getUserByIdGeneric(payload: Payload, id: Long) = {
     service.getById(id)(payload) map {
@@ -24,6 +26,7 @@ class UserController(implicit service: UserService, implicit val authentication:
   }
 
   private val getUser: Endpoint[UserResource.Generic] = get(authentication.authenticated :: "user") { payload: Payload =>
+    log.debug(s"GET /user route called by a user with id: ${payload.id}")
     val result = getUserByIdGeneric(payload, payload.id)
     result.asTwitter
   }

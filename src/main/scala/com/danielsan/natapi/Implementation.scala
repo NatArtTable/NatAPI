@@ -14,6 +14,8 @@ import io.finch.Application
 import com.typesafe.config.{Config, ConfigFactory}
 import org.slf4j.LoggerFactory
 
+import scala.util.Try
+
 trait Implementation {
   private val log = LoggerFactory.getLogger(this.getClass)
 
@@ -48,8 +50,8 @@ trait Implementation {
   lazy val static = staticController.getEndpoints
 
   def prepare(): Unit = {
-    Await.result(fileRepository.prepare(), prepareTimeout)
-    Await.result(userRepository.prepare(), prepareTimeout)
-    Await.result(imageRepository.prepare(), prepareTimeout)
+    Try(Await.result(fileRepository.prepare(), prepareTimeout))
+    Try(Await.result(userRepository.prepare(), prepareTimeout))
+    Try(Await.result(imageRepository.prepare(), prepareTimeout))
   }
 }

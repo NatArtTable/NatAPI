@@ -1,10 +1,9 @@
 package com.danielsan.natapi.endpoints
 
 import com.danielsan.natapi.controllers
-import com.danielsan.natapi.controllers.Controller
 import com.danielsan.natapi.resources.AuthResource.Payload
 import com.danielsan.natapi.services.AuthService
-import io.finch.{Endpoint, Forbidden, Ok, Unauthorized, headerOption}
+import io.finch.{Endpoint, Ok, headerOption}
 
 trait Authentication {
   val authenticated: Endpoint[Payload]

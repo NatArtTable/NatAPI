@@ -8,16 +8,18 @@ import com.danielsan.natapi.services.ImageService
 import com.danielsan.natapi.endpoints.Authentication
 import com.danielsan.natapi.resources.AuthResource.Payload
 import com.twitter.finagle.http.exp.Multipart.FileUpload
+import org.slf4j.LoggerFactory
 import shapeless.{:+:, CNil}
 
 class ImageController(implicit service: ImageService, implicit val authentication: Authentication)
     extends Controller[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: CreatedResource :+: CNil] {
+  private val log = LoggerFactory.getLogger(this.getClass)
 
   private val getImage: Endpoint[ImageResources.Full] = get(authentication.authenticated :: "image" :: path[Long]) { (payload: Payload, id: Long) =>
-    val result = service.getById(id)(payload) map ({
+    val result = service.getById(id)(payload) map {
       case Left(image) => Ok(image)
       case Right(ex)   => throw ex
-    })
+    }
 
     result.asTwitter
   }
@@ -38,21 +40,31 @@ class ImageController(implicit service: ImageService, implicit val authenticatio
       paramOption("description") ::
       paramOption("tags")
   ) { (payload: Payload, image: Option[FileUpload], description: Option[String], tags: Option[String]) =>
+    log.debug(s"Image upload route has been called by a user with id ${payload.id}.")
+
     image match {
       case Some(file) => {
+        log.debug("Image is being uploaded.")
         val parsedTags = tags match {
           case Some(v) => Some(v.split(",").toSeq)
           case None    => None
         }
 
+        log.debug("Trying to persist image via ImageService")
         val result = service.create(ImageResources.Create(file, description, parsedTags))(payload) map {
-          case Left(created) => Ok(created)
-          case Right(ex)     => throw ex
+          case Left(created) =>
+            log.debug("Image persisted! Responding status Ok")
+            Ok(created)
+          case Right(ex) =>
+            log.debug(s"Failed to persist Image =( Exception Message: ${ex.getMessage}")
+            throw ex
         }
 
         result.asTwitter
       }
-      case None => throw new Controller.MissingParameterException("Missing image file! Send it using MultiPart Form")
+      case None =>
+        log.debug("No image supplied, throwing a MissingParameterException.")
+        throw new Controller.MissingParameterException("Missing image file! Send it using MultiPart Form")
     }
   }
 

@@ -12,7 +12,7 @@ import ExecutionContext.Implicits.global
 trait ImageService {
   def getById(id: Long)(implicit payload: Payload): Future[Either[ImageResources.Full, Service.Exception]]
   def getAll()(implicit payload: Payload): Future[Either[Seq[ImageResources.Small], Service.Exception]]
-  def createImage(image: ImageResources.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]]
+  def create(image: ImageResources.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]]
 }
 
 class ImageServiceImpl(implicit repository: ImageRepository) extends ImageService {
@@ -32,7 +32,7 @@ class ImageServiceImpl(implicit repository: ImageRepository) extends ImageServic
     }
   }
 
-  override def createImage(image: ImageResources.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]] = {
+  override def create(image: ImageResources.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]] = {
     if (!Seq(FileHandler.JPEG, FileHandler.PNG).contains(image.file.fileType))
       return Future { Right(new Service.InvalidParametersException("image type not supported. Supported image types: jpg, png.")) }
 

@@ -28,6 +28,13 @@ object DatabaseModels {
 
     def owner = foreignKey("owner_fk", owner_id, users)(_.id)
 
+    private def parseTags(s: String): Seq[String] = {
+      s match {
+        case ""        => Seq()
+        case s: String => s.split(",")
+      }
+    }
+
     def * =
       ProvenShape.proveShapeOf(
         (id, description, tags_joined, original_uri, filename, owner_id) <> (((id: Long,
@@ -35,7 +42,7 @@ object DatabaseModels {
                                                                                tags_joined: String,
                                                                                original_uri: String,
                                                                                filename: String,
-                                                                               owner_id: Long) => Image(id, description, tags_joined.split(","), original_uri, filename, owner_id)).tupled,
+                                                                               owner_id: Long) => Image(id, description, parseTags(tags_joined), original_uri, filename, owner_id)).tupled,
         (image: Image) => Option(image.id, image.description, image.tags.mkString(","), image.original_uri, image.filename, image.owner_id)))
   }
 

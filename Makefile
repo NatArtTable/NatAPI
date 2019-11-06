@@ -24,3 +24,6 @@ coverage: ## Run tests with coverage support and open the result in the browser
 	sbt clean coverage test
 	sbt coverageReport
 	$(OPEN) "target/scala-2.12/scoverage-report/index.html"
+
+build: ## Build with sbt-native-packager
+	sbt compile stage

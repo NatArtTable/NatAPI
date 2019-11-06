@@ -32,5 +32,9 @@ libraryDependencies ++= Seq(
   "com.h2database" % "h2" % "1.4.200" % Test
 )
 
+enablePlugins(JavaAppPackaging)
+
 fork in Test := true
-javaOptions in Test += s"-Dconfig.file=${sourceDirectory.value}/test/resources/application.test.conf"
+javaOptions in Test += s"-Dconfig.file=${baseDirectory.value}/conf/test.conf"
+
+javaOptions in run += s"-Dconfig.file=${baseDirectory.value}/conf/local.conf"

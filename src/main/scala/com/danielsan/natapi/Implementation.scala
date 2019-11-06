@@ -10,6 +10,7 @@ import com.danielsan.natapi.controllers._
 import com.danielsan.natapi.endpoints.{Authentication, AuthenticationImpl}
 import com.danielsan.natapi.repositories._
 import com.danielsan.natapi.services._
+import io.finch.Application
 import com.typesafe.config.{Config, ConfigFactory}
 import org.slf4j.LoggerFactory
 
@@ -44,7 +45,8 @@ trait Implementation {
   val staticController = new StaticController()
 
   // Loading the api
-  lazy val api = staticController.getEndpoints :+: userController.getEndpoints :+: imageController.getEndpoints :+: authController.getEndpoints
+  lazy val api = userController.getEndpoints :+: imageController.getEndpoints :+: authController.getEndpoints
+  lazy val static = staticController.getEndpoints
 
   def prepare(): Unit = {
     if (allowPreparationFailue) {

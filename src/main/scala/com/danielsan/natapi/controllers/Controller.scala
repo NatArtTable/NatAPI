@@ -5,9 +5,10 @@ import com.danielsan.natapi.services.Service
 import com.danielsan.natapi.helpers.{FileHandlerFinagleFileUpload, FutureConverters}
 
 object Controller {
-  class Exception(msg: String) extends scala.Exception(msg)
+  sealed class Exception(msg: String) extends scala.Exception(msg)
   class InvalidParametersException(msg: String) extends Exception(msg)
-  class MissingParameterException(msg: String) extends InvalidParametersException(msg: String)
+  class MissingParameterException(msg: String) extends InvalidParametersException(msg)
+  class FileNotFoundException(msg: String) extends Exception(msg)
 }
 
 trait Controller[A] extends FutureConverters with FileHandlerFinagleFileUpload {
@@ -16,6 +17,7 @@ trait Controller[A] extends FutureConverters with FileHandlerFinagleFileUpload {
   def getEndpoints: Endpoint[A] = endpoints.handle {
     case e: io.finch.Error                        => BadRequest(e)
     case e: Controller.InvalidParametersException => BadRequest(e)
+    case e: Controller.FileNotFoundException      => NotFound(e)
     case e: Service.NotFoundException             => NotFound(e)
     case e: Service.PermissionDeniedException     => Forbidden(e)
     case e: Service.InvalidParametersException    => BadRequest(e)

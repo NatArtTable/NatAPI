@@ -1,5 +1,6 @@
 package com.danielsan.natapi.repositories
 
+import java.io.File
 import java.nio.file.{Path, Paths}
 import java.util.UUID
 
@@ -14,7 +15,7 @@ trait FileRepository extends Repository {
   }
 
   def save(file: FileHandler, folder: String): (String, Future[Unit])
-  def load(path: Path): String
+  def getFile(path: Path): File
 }
 
 class FileRepositoryImpl(rootFolder: String) extends FileRepository {
@@ -31,5 +32,7 @@ class FileRepositoryImpl(rootFolder: String) extends FileRepository {
     (filename, file.saveToDisk(path))
   }
 
-  override def load(path: Path): String = { "1" }
+  override def getFile(path: Path): File = {
+    Paths.get(rootFolder.toString, path.toString).toFile
+  }
 }

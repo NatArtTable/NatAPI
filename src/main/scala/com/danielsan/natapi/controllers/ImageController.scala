@@ -45,7 +45,7 @@ class ImageController(implicit val service: ImageService, implicit val authentic
           case None    => None
         }
 
-        val result = service.createImage(ImageResources.Create(new Controller.FileHandler(file), description, parsedTags))(payload) map {
+        val result = service.createImage(ImageResources.Create(file, description, parsedTags))(payload) map {
           case Left(created) => Ok(created)
           case Right(ex)     => throw ex
         }

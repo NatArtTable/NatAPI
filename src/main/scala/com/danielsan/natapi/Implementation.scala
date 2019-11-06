@@ -14,7 +14,7 @@ import io.finch.Application
 import com.typesafe.config.{Config, ConfigFactory}
 import org.slf4j.LoggerFactory
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 trait Implementation {
   private val log = LoggerFactory.getLogger(this.getClass)
@@ -50,8 +50,23 @@ trait Implementation {
   lazy val static = staticController.getEndpoints
 
   def prepare(): Unit = {
-    Try(Await.result(fileRepository.prepare(), prepareTimeout))
-    Try(Await.result(userRepository.prepare(), prepareTimeout))
-    Try(Await.result(imageRepository.prepare(), prepareTimeout))
+    log.info("Trying prepare the fileRepository")
+    Try(Await.result(fileRepository.prepare(), prepareTimeout)) match {
+      case Success(_) => log.info("Succeed in preparing the fileRepository")
+      case Failure(e) => log.warn(s"Failed to prepare the fileRepository ${e.getMessage}")
+    }
+
+    log.info("Trying prepare the userRepository")
+    Try(Await.result(userRepository.prepare(), prepareTimeout)) match {
+      case Success(_) => log.info("Succeed in preparing the userRepository")
+      case Failure(e) => log.warn(s"Failed to prepare the userRepository ${e.getMessage}")
+    }
+
+    log.info("Trying prepare the imageRepository")
+    Try(Await.result(imageRepository.prepare(), prepareTimeout)) match {
+      case Success(_) => log.info("Succeed in preparing the imageRepository")
+      case Failure(e) => log.warn(s"Failed to prepare the imageRepository ${e.getMessage}")
+    }
+
   }
 }

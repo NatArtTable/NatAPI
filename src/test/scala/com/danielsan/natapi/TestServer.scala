@@ -13,12 +13,18 @@ class TestServer(val atMost: Duration) {
 
   val impl = new Implementation(database, "/tmp/natapi", atMost)
 
-  def addUser(user: User): Long = {
-    Await.result(database.run((DatabaseModels.users returning DatabaseModels.users.map(_.id)) += user), atMost)
+  def addUser(user: User): User = {
+    val id = Await.result(database.run((DatabaseModels.users returning DatabaseModels.users.map(_.id)) += user), atMost)
+    val newUser = user.copy(id = id)
+
+    newUser
   }
 
-  def addImage(image: Image): Long = {
-    Await.result(database.run((DatabaseModels.images returning DatabaseModels.images.map(_.id)) += image), atMost)
+  def addImage(image: Image): Image = {
+    val id = Await.result(database.run((DatabaseModels.images returning DatabaseModels.images.map(_.id)) += image), atMost)
+    val newImage = image.copy(id = id)
+
+    newImage
   }
 
   def prepare(): Unit = {

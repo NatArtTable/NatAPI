@@ -1,0 +1,54 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>*** \(%logger{30}\)%green(%X{debugId}) %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="${log.root:-info}">
+        <appender-ref ref="STDOUT" />
+    </root>
+    <logger name="slick.basic.BasicBackend.action"          level="OFF" />
+    <logger name="slick.basic.BasicBackend.stream"          level="OFF" />
+    <logger name="slick.compiler"                           level="OFF" />
+    <logger name="slick.compiler.QueryCompiler"             level="OFF" />
+    <logger name="slick.compiler.QueryCompilerBenchmark"    level="OFF" />
+    <logger name="slick.compiler.Inline"                    level="OFF" />
+    <logger name="slick.compiler.AssignUniqueSymbols"       level="OFF" />
+    <logger name="slick.compiler.InferTypes"                level="OFF" />
+    <logger name="slick.compiler.ExpandTables"              level="OFF" />
+    <logger name="slick.compiler.EmulateOuterJoins"         level="OFF" />
+    <logger name="slick.compiler.ForceOuterBinds"           level="OFF" />
+    <logger name="slick.compiler.RemoveMappedTypes"         level="OFF" />
+    <logger name="slick.compiler.CreateResultSetMapping"    level="OFF" />
+    <logger name="slick.compiler.ExpandSums"                level="OFF" />
+    <logger name="slick.compiler.ExpandRecords"             level="OFF" />
+    <logger name="slick.compiler.ExpandConditionals"        level="OFF" />
+    <logger name="slick.compiler.FlattenProjections"        level="OFF" />
+    <logger name="slick.compiler.CreateAggregates"          level="OFF" />
+    <logger name="slick.compiler.RewriteJoins"              level="OFF" />
+    <logger name="slick.compiler.RemoveTakeDrop"            level="OFF" />
+    <logger name="slick.compiler.ResolveZipJoins"           level="OFF" />
+    <logger name="slick.compiler.HoistClientOps"            level="OFF" />
+    <logger name="slick.compiler.ReorderOperations"         level="OFF" />
+    <logger name="slick.compiler.MergeToComprehensions"     level="OFF" />
+    <logger name="slick.compiler.OptimizeScalar"            level="OFF" />
+    <logger name="slick.compiler.FixRowNumberOrdering"      level="OFF" />
+    <logger name="slick.compiler.PruneProjections"          level="OFF" />
+    <logger name="slick.compiler.RewriteDistinct"           level="OFF" />
+    <logger name="slick.compiler.RewriteBooleans"           level="OFF" />
+    <logger name="slick.compiler.SpecializeParameters"      level="OFF" />
+    <logger name="slick.compiler.CodeGen"                   level="OFF" />
+    <logger name="slick.compiler.RemoveFieldNames"          level="OFF" />
+    <logger name="slick.compiler.InsertCompiler"            level="OFF" />
+    <logger name="slick.compiler.VerifyTypes"               level="OFF" />
+    <logger name="slick.jdbc.DriverDataSource"              level="OFF" />
+    <logger name="slick.jdbc.JdbcBackend.statement"         level="OFF" />
+    <logger name="slick.jdbc.JdbcBackend.parameter"         level="OFF" />
+    <logger name="slick.jdbc.JdbcBackend.benchmark"         level="OFF" />
+    <logger name="slick.jdbc.StatementInvoker.result"       level="OFF" />
+    <logger name="slick.jdbc.JdbcModelBuilder"              level="OFF" />
+    <logger name="slick.memory.HeapBackend"                 level="OFF" />
+    <logger name="slick.memory.QueryInterpreter"            level="OFF" />
+    <logger name="slick.relational.ResultConverterCompiler" level="OFF" />
+    <logger name="slick.util.AsyncExecutor"                 level="OFF" />
+</configuration>

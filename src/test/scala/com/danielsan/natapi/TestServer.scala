@@ -1,17 +1,15 @@
 package com.danielsan.natapi
 
-import scala.concurrent.{ExecutionContext, Await}
+import scala.concurrent.Await
 import slick.jdbc.MySQLProfile.api._
-
 import com.danielsan.natapi.models._
 import com.danielsan.natapi.repositories.DatabaseModels
+import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration._
 
-class TestServer(val atMost: Duration) {
-  implicit val database: Database = Database.forConfig("test_db")
-
-  val impl = new Implementation(database, "/tmp/natapi", atMost)
+class TestServer(val atMost: Duration) extends Implementation {
+  private val log = LoggerFactory.getLogger(this.getClass)
 
   def addUser(user: User): User = {
     val id = Await.result(database.run((DatabaseModels.users returning DatabaseModels.users.map(_.id)) += user), atMost)
@@ -27,12 +25,13 @@ class TestServer(val atMost: Duration) {
     newImage
   }
 
-  def prepare(): Unit = {
-    impl.prepare()
-  }
-
   def tearDown(): Unit = {
+    log.info("Tearing down database:")
+
+    log.info("Tearing down images tables")
     Await.result(database.run(DatabaseModels.images.schema.dropIfExists), atMost)
+
+    log.info("Tearing down users tables")
     Await.result(database.run(DatabaseModels.users.schema.dropIfExists), atMost)
   }
 }

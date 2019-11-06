@@ -12,22 +12,17 @@ import slick.jdbc.MySQLProfile.api.Database
 
 import scala.concurrent.duration._
 
-object NatServer extends TwitterServer with Enconders {
+object NatServer extends TwitterServer with Enconders with Implementation {
   private implicit val conf: Config = ConfigFactory.load()
   private val port = conf.getInt("api.port")
 
-  // Database Configuration
-  implicit val database: Database = Database.forConfig("db")
-
-  private val impl = new Implementation(database, conf.getString("images.folder"), conf.getInt("timeouts.preparation").seconds)
-
-  impl.prepare()
+  prepare()
 
   def start(): Unit = {
     // Preparing the server
     val server = Http.server
       .withStatsReceiver(statsReceiver)
-      .serve(s":$port", impl.api.toServiceAs[Application.Json])
+      .serve(s":$port", api.toServiceAs[Application.Json])
     closeOnExit(server)
 
     // Starting server

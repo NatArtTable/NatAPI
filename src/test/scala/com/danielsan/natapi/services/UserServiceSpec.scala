@@ -20,21 +20,21 @@ class UserServiceSpec extends BaseSpec {
 
   describe("test getById service") {
     it("should return the correct Public information of the user if another user make a valid request for") {
-      val result = Await.result(server.impl.userService.getById(jujuba.id)(Payload(daniel)), 2.seconds)
+      val result = Await.result(server.userService.getById(jujuba.id)(Payload(daniel)), 2.seconds)
 
       assert(result.isLeft)
       assert(result.left.getOrElse(null) == UserResource.Public(jujuba))
     }
 
     it("should return the correct Private information of the user if a user requests for it own information") {
-      val result = Await.result(server.impl.userService.getById(daniel.id)(Payload(daniel)), 2.seconds)
+      val result = Await.result(server.userService.getById(daniel.id)(Payload(daniel)), 2.seconds)
 
       assert(result.isLeft)
       assert(result.left.getOrElse(null) == UserResource.Private(daniel))
     }
 
     it("should return a NotFound Exception if a user requests for a non existing Id") {
-      val result = Await.result(server.impl.userService.getById(32)(Payload(daniel)), 2.seconds)
+      val result = Await.result(server.userService.getById(32)(Payload(daniel)), 2.seconds)
 
       assert(result.isRight)
       assert(result.getOrElse(null).isInstanceOf[Service.NotFoundException])

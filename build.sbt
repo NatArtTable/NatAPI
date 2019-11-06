@@ -30,3 +30,6 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
   "com.h2database" % "h2" % "1.4.200" % Test
 )
+
+fork in Test := true
+javaOptions in Test += s"-Dconfig.file=${sourceDirectory.value}/test/resources/application.test.conf"

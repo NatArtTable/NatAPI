@@ -3,14 +3,26 @@ package com.danielsan.natapi
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import slick.jdbc.MySQLProfile.api._
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.danielsan.natapi.controllers._
 import com.danielsan.natapi.endpoints.{Authentication, AuthenticationImpl}
 import com.danielsan.natapi.repositories._
 import com.danielsan.natapi.services._
+import com.typesafe.config.{Config, ConfigFactory}
+import org.slf4j.LoggerFactory
 
-class Implementation(database: Database, imagesRootFolder: String, prepareTimeout: Duration) {
+trait Implementation {
+  private val log = LoggerFactory.getLogger(this.getClass)
+
+  private implicit val conf: Config = ConfigFactory.load()
+
+  // Configurations
+  protected implicit val database: Database = Database.forConfig("db")
+  private val imagesRootFolder = conf.getString("images.folder")
+  private val prepareTimeout = conf.getInt("db_preparation.timeout").seconds
+  private val allowPreparationFailue = conf.getBoolean("db_preparation.allow_failure")
 
   // Loading repositories
   implicit val fileRepository: FileRepository = new FileRepositoryImpl(imagesRootFolder)
@@ -34,8 +46,20 @@ class Implementation(database: Database, imagesRootFolder: String, prepareTimeou
   lazy val api = userController.getEndpoints :+: imageController.getEndpoints :+: authController.getEndpoints
 
   def prepare(): Unit = {
-    Await.result(fileRepository.prepare() recover { case e: Exception  => println("Failed to prepare file repository") }, prepareTimeout)
-    Await.result(userRepository.prepare() recover { case e: Exception  => println("Failed to prepare user repository") }, prepareTimeout)
-    Await.result(imageRepository.prepare() recover { case e: Exception => println("Failed to prepare image repository") }, prepareTimeout)
+    if (allowPreparationFailue) {
+      Await.result(fileRepository.prepare() recover {
+        case _: Exception => log.info("Failed to prepare file repository")
+      }, prepareTimeout)
+      Await.result(userRepository.prepare() recover {
+        case _: Exception => log.warn("Failed to prepare user repository")
+      }, prepareTimeout)
+      Await.result(imageRepository.prepare() recover {
+        case _: Exception => log.warn("Failed to prepare image repository")
+      }, prepareTimeout)
+    } else {
+      Await.result(fileRepository.prepare(), prepareTimeout)
+      Await.result(userRepository.prepare(), prepareTimeout)
+      Await.result(imageRepository.prepare(), prepareTimeout)
+    }
   }
 }

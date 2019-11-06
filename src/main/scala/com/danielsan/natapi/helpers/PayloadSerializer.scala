@@ -9,7 +9,7 @@ object PayloadSerializer {
 
   def deserialize(s: String): Payload = {
     val xml = XML.loadString(s)
-    val id = (xml \ "id").text.toInt
+    val id = (xml \ "id").text.toLong
     val email = (xml \ "email").text
 
     Payload(id, email)

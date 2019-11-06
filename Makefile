@@ -9,7 +9,7 @@ else
     ifeq ($(UNAME),Linux)
         OPEN := xdg-open
     endif
-    ifeq ($(UNAME_S),Darwin)
+    ifeq ($(UNAME),Darwin)
         OPEN := open
     endif
 endif
@@ -27,4 +27,3 @@ coverage: ## Run tests with coverage support and open the result in the browser
 
 build: ## Build with sbt-native-packager
 	sbt compile stage
-

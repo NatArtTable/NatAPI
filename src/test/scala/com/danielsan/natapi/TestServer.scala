@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 class TestServer(val atMost: Duration) {
   implicit val database: Database = Database.forConfig("test_db")
 
-  val impl = new Implementation(database, "/tmp", atMost)
+  val impl = new Implementation(database, "/tmp/natapi", atMost)
 
   def addUser(user: User): Long = {
     Await.result(database.run((DatabaseModels.users returning DatabaseModels.users.map(_.id)) += user), atMost)

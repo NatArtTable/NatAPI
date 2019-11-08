@@ -23,7 +23,7 @@ object DatabaseModels {
     def description = column[String]("description")
     protected def tags_joined = column[String]("tags")
     def original_uri = column[String]("original_uri")
-    def filename = column[String]("filename")
+    def public_uri = column[String]("public_uri")
     def owner_id = column[Long]("owner_id")
 
     def owner = foreignKey("owner_fk", owner_id, users)(_.id)
@@ -37,13 +37,13 @@ object DatabaseModels {
 
     def * =
       ProvenShape.proveShapeOf(
-        (id, description, tags_joined, original_uri, filename, owner_id) <> (((id: Long,
-                                                                               description: String,
-                                                                               tags_joined: String,
-                                                                               original_uri: String,
-                                                                               filename: String,
-                                                                               owner_id: Long) => Image(id, description, parseTags(tags_joined), original_uri, filename, owner_id)).tupled,
-        (image: Image) => Option(image.id, image.description, image.tags.mkString(","), image.original_uri, image.filename, image.owner_id)))
+        (id, description, tags_joined, original_uri, public_uri, owner_id) <> (((id: Long,
+                                                                                 description: String,
+                                                                                 tags_joined: String,
+                                                                                 original_uri: String,
+                                                                                 public_uri: String,
+                                                                                 owner_id: Long) => Image(id, description, parseTags(tags_joined), original_uri, public_uri, owner_id)).tupled,
+        (image: Image) => Option(image.id, image.description, image.tags.mkString(","), image.original_uri, image.public_uri, image.owner_id)))
   }
 
   implicit val images: TableQuery[ImageRow] = TableQuery[ImageRow]

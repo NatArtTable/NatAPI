@@ -2,7 +2,7 @@ package com.danielsan.natapi.controllers
 
 import io.finch.{BadRequest, Endpoint, Forbidden, InternalServerError, NotFound}
 import com.danielsan.natapi.services.Service
-import com.danielsan.natapi.helpers.{FileHandlerFinagleFileUpload, FutureConverters}
+import com.danielsan.natapi.helpers.{FileHandlerFinagle, FutureConverters}
 import org.slf4j.LoggerFactory
 
 object Controller {
@@ -12,7 +12,7 @@ object Controller {
   class FileNotFoundException(msg: String) extends Exception(msg)
 }
 
-trait Controller[A] extends FutureConverters with FileHandlerFinagleFileUpload {
+trait Controller[A] extends FutureConverters with FileHandlerFinagle {
   private val log = LoggerFactory.getLogger(this.getClass)
 
   protected def endpoints: Endpoint[A]

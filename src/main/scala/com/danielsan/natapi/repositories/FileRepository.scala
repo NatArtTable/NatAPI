@@ -1,9 +1,6 @@
 package com.danielsan.natapi.repositories
 
-import java.io.File
-import java.nio.file.{Path, Paths}
-import java.util.UUID
-
+import com.cloudinary.Cloudinary
 import com.danielsan.natapi.helpers.FileHandler
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -14,25 +11,17 @@ trait FileRepository extends Repository {
     override def toString = uri
   }
 
-  def save(file: FileHandler, folder: String): (String, Future[Unit])
-  def getFile(path: Path): File
+  def save(file: FileHandler): Future[String]
 }
 
-class FileRepositoryImpl(rootFolder: String) extends FileRepository {
+class FileRepositoryImpl(implicit var cloudinary: Cloudinary) extends FileRepository {
+  override def prepare(): Future[Unit] = { Future.successful() }
 
-  override def prepare(): Future[Unit] = {
-    Future { Paths.get(rootFolder).toFile.mkdirs() }
-  }
+  override def save(file: FileHandler): Future[String] = {
+    val path = file.getFilePath
 
-  override def save(file: FileHandler, folder: String): (String, Future[Unit]) = {
-    val filename = s"${UUID.randomUUID().toString}.${file.fileType.extension}"
-
-    val path = Paths.get(rootFolder, folder, filename)
-
-    (filename, file.saveToDisk(path))
-  }
-
-  override def getFile(path: Path): File = {
-    Paths.get(rootFolder.toString, path.toString).toFile
+    cloudinary.uploader().upload(path.toAbsolutePath.toString) map { response =>
+      response.url
+    }
   }
 }

@@ -5,7 +5,7 @@ import ExecutionContext.Implicits.global
 import io.finch._
 import com.danielsan.natapi.resources.{CreatedResource, ImageResources, SearchResource}
 import com.danielsan.natapi.services.ImageService
-import com.danielsan.natapi.endpoints.Authentication
+import com.danielsan.natapi.filters.Authentication
 import com.danielsan.natapi.resources.AuthResource.Payload
 import com.twitter.finagle.http.exp.Multipart.FileUpload
 import org.slf4j.LoggerFactory

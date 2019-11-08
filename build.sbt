@@ -2,7 +2,7 @@ name := "NatAPI"
 
 version := "0.1"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.11.12"
 
 lazy val finchVersion = "0.16.0-M1"
 lazy val circeVersion = "0.8.0"
@@ -29,6 +29,7 @@ libraryDependencies ++= Seq(
   "mysql" % "mysql-connector-java" % "8.0.18",
   "com.typesafe" % "config" % typesafeConfig,
   "ch.qos.logback" % "logback-classic" % "1.2.3",
+  "com.cloudinary" %% "cloudinary-core-scala" % "1.2.1",
   "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
   "org.scalamock" %% "scalamock" % "4.4.0" % Test,
   "com.h2database" % "h2" % "1.4.200" % Test

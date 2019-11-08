@@ -50,14 +50,14 @@ class AuthServiceImplSpec extends BaseSpec {
       val result = server.authService.auth("white noise")
 
       assert(result.isRight)
-      assert(result.getOrElse(null).isInstanceOf[Service.PermissionDeniedException])
+      assert(result.right.get.isInstanceOf[Service.PermissionDeniedException])
     }
 
     it("Should return a MissingParameterException trying to decode a null token") {
       val result = server.authService.auth(null)
 
       assert(result.isRight)
-      assert(result.getOrElse(null).isInstanceOf[Service.MissingParameterException])
+      assert(result.right.get.isInstanceOf[Service.MissingParameterException])
     }
   }
 }

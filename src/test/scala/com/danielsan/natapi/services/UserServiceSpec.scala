@@ -37,7 +37,7 @@ class UserServiceSpec extends BaseSpec {
       val result = Await.result(server.userService.getById(32)(Payload(daniel)), 2.seconds)
 
       assert(result.isRight)
-      assert(result.getOrElse(null).isInstanceOf[Service.NotFoundException])
+      assert(result.right.get.isInstanceOf[Service.NotFoundException])
     }
   }
 }

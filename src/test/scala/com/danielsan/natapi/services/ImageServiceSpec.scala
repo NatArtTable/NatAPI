@@ -1,18 +1,19 @@
 package com.danielsan.natapi.services
 
-import java.nio.file.Path
+import java.nio.file.Paths
 
 import com.danielsan.natapi.helpers.FileHandler
 import com.danielsan.natapi.models._
+import com.danielsan.natapi.repositories.FileRepositoryImpl
 import com.danielsan.natapi.resources.AuthResource.Payload
 import com.danielsan.natapi.resources.ImageResources
-import org.scalamock.matchers.ArgCapture.CaptureAll
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.OneInstancePerTest
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class ImageServiceSpec extends BaseSpec with MockFactory {
+class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest {
   var daniel: User = _
   var danielImage: Image = _
   var danielOtherImage: Image = _
@@ -75,7 +76,10 @@ class ImageServiceSpec extends BaseSpec with MockFactory {
       val file = stub[FileHandler]
 
       (file.fileType _).when().returns(FileHandler.JPEG)
-      (file.saveToDisk _) when (*) returns Future.successful()
+      (file.getFilePath _).when().returns(Paths.get("tmpFile"))
+
+      val cloudinary = mockCloudinaryUpload("http://public/url")
+      server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
       val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")))
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
@@ -87,7 +91,10 @@ class ImageServiceSpec extends BaseSpec with MockFactory {
       val file = stub[FileHandler]
 
       (file.fileType _).when().returns(FileHandler.PNG)
-      (file.saveToDisk _) when (*) returns Future.successful()
+      (file.getFilePath _).when().returns(Paths.get("tmpFile"))
+
+      val cloudinary = mockCloudinaryUpload("http://public/url")
+      server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
       val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")))
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
@@ -105,7 +112,10 @@ class ImageServiceSpec extends BaseSpec with MockFactory {
       val file = stub[FileHandler]
 
       (file.fileType _).when().returns(FileHandler.PNG)
-      (file.saveToDisk _) when (*) returns Future.successful()
+      (file.getFilePath _).when().returns(Paths.get("tmpFile"))
+
+      val cloudinary = mockCloudinaryUpload("http://public/url")
+      server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
       val newImage = ImageResources.Create(file, None, Some(Seq("tag1", "tag2", "tag3")))
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
@@ -122,7 +132,10 @@ class ImageServiceSpec extends BaseSpec with MockFactory {
       val file = stub[FileHandler]
 
       (file.fileType _).when().returns(FileHandler.PNG)
-      (file.saveToDisk _) when (*) returns Future.successful()
+      (file.getFilePath _).when().returns(Paths.get("tmpFile"))
+
+      val cloudinary = mockCloudinaryUpload("http://public/url")
+      server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
       val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")))
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
@@ -140,7 +153,10 @@ class ImageServiceSpec extends BaseSpec with MockFactory {
       val file = stub[FileHandler]
 
       (file.fileType _).when().returns(FileHandler.PNG)
-      (file.saveToDisk _) when (*) returns Future.successful()
+      (file.getFilePath _).when().returns(Paths.get("tmpFile"))
+
+      val cloudinary = mockCloudinaryUpload("http://public/url")
+      server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
       val newImage = ImageResources.Create(file, Some("xablau"), None)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
@@ -154,11 +170,13 @@ class ImageServiceSpec extends BaseSpec with MockFactory {
     }
 
     it("test create service for image with correct parameters correctly saves the image") {
-      val file = mock[FileHandler]
-      val filenames = CaptureAll[Path]()
+      val file = stub[FileHandler]
 
-      (file.fileType _).expects.returns(FileHandler.JPEG).atLeastOnce()
-      (file.saveToDisk _) expects capture(filenames) returns Future.successful()
+      (file.fileType _).when().returns(FileHandler.PNG)
+      (file.getFilePath _).when().returns(Paths.get("tmpFile"))
+
+      val cloudinary = mockCloudinaryUpload("http://public/url")
+      server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
       val newImage = ImageResources.Create(file, None, Some(Seq("tag1", "tag2", "tag3")))
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
@@ -168,14 +186,17 @@ class ImageServiceSpec extends BaseSpec with MockFactory {
       val created = result.left.get.id
 
       val getCreatedImage = Await.result(server.imageService.getById(created)(Payload(jujuba)), 5.second).left.get
-      assert(filenames.values.map(_.toString.contains(getCreatedImage.filename)).foldLeft(false)(_ || _))
+      assert(getCreatedImage.public_uri == "http://public/url")
     }
 
     it("should return a InvalidParamtersException if a no supported content type is passed") {
       val file = stub[FileHandler]
 
       (file.fileType _).when().returns(FileHandler.TXT)
-      (file.saveToDisk _) when (*) returns Future.successful()
+      (file.getFilePath _).when().returns(Paths.get("tmpFile"))
+
+      val cloudinary = mockCloudinaryUpload("http://public/url")
+      server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
       val newImage = ImageResources.Create(file, Some("xablau"), Some(Seq("1")))
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)

@@ -3,7 +3,7 @@ package com.danielsan.natapi.controllers
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import io.finch._
-import com.danielsan.natapi.endpoints.Authentication
+import com.danielsan.natapi.filters.Authentication
 import com.danielsan.natapi.resources.UserResource
 import com.danielsan.natapi.resources.AuthResource.Payload
 import com.danielsan.natapi.services.UserService

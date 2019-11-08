@@ -5,14 +5,14 @@ import com.danielsan.natapi.models.Image
 
 object ImageResources {
 
-  case class Small(id: Long, filename: String)
+  case class Small(id: Long, public_uri: String)
   object Small {
-    def apply(image: Image): Small = Small(image.id, image.filename)
+    def apply(image: Image): Small = Small(image.id, image.public_uri)
   }
 
-  case class Full(id: Long, filename: String, description: String, tags: Seq[String])
+  case class Full(id: Long, public_uri: String, description: String, tags: Seq[String])
   object Full {
-    def apply(image: Image): Full = Full(image.id, image.filename, image.description, image.tags)
+    def apply(image: Image): Full = Full(image.id, image.public_uri, image.description, image.tags)
   }
 
   case class Create(file: FileHandler, description: Option[String], tags: Option[Seq[String]])

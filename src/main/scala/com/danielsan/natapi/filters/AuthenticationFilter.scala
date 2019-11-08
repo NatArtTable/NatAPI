@@ -1,4 +1,4 @@
-package com.danielsan.natapi.endpoints
+package com.danielsan.natapi.filters
 
 import com.danielsan.natapi.controllers
 import com.danielsan.natapi.resources.AuthResource.Payload

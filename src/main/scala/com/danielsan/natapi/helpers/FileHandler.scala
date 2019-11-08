@@ -2,11 +2,9 @@ package com.danielsan.natapi.helpers
 
 import java.nio.file.Path
 
-import scala.concurrent.Future
-
 trait FileHandler {
   def fileType: FileHandler.FileType
-  def saveToDisk(path: Path): Future[Unit]
+  def getFilePath: Path
 }
 
 object FileHandler {

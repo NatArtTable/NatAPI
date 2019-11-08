@@ -4,7 +4,7 @@ import com.danielsan.natapi.helpers.FileHandler
 import com.danielsan.natapi.models.ImageModels
 import com.danielsan.natapi.repositories.ImageRepository
 import com.danielsan.natapi.resources.AuthResource.Payload
-import com.danielsan.natapi.resources.{CreatedResource, ImageResources}
+import com.danielsan.natapi.resources.ImageResources
 
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
@@ -12,7 +12,7 @@ import ExecutionContext.Implicits.global
 trait ImageService {
   def getById(id: Long)(implicit payload: Payload): Future[Either[ImageResources.Full, Service.Exception]]
   def getAll()(implicit payload: Payload): Future[Either[Seq[ImageResources.Small], Service.Exception]]
-  def create(image: ImageResources.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]]
+  def create(image: ImageResources.Create)(implicit payload: Payload): Future[Either[ImageResources.Created, Service.Exception]]
 }
 
 class ImageServiceImpl(implicit repository: ImageRepository) extends ImageService {
@@ -32,13 +32,13 @@ class ImageServiceImpl(implicit repository: ImageRepository) extends ImageServic
     }
   }
 
-  override def create(image: ImageResources.Create)(implicit payload: Payload): Future[Either[CreatedResource, Service.Exception]] = {
+  override def create(image: ImageResources.Create)(implicit payload: Payload): Future[Either[ImageResources.Created, Service.Exception]] = {
     if (!Seq(FileHandler.JPEG, FileHandler.PNG).contains(image.file.fileType))
       return Future { Right(new Service.InvalidParametersException("image type not supported. Supported image types: jpg, png.")) }
 
     val newImage = ImageModels.New(image.file, image.description.getOrElse(""), image.tags.getOrElse(Seq()), payload.id)
     repository.create(newImage) map { created =>
-      Left(CreatedResource(created))
+      Left(ImageResources.Created(created))
     }
   }
 }

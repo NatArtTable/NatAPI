@@ -25,13 +25,13 @@ class ImageRepositoryImpl(implicit db: Database, implicit val images: TableQuery
     }
   }
 
-  override def create(newImage: ImageModels.New): Future[Created] = {
+  override def create(newImage: ImageModels.New): Future[ImageModels.Created] = {
     for {
       publicURI <- fileRepository.save(newImage.file)
       id <- {
         val row = Image(1, newImage.description, newImage.tags, "", publicURI, newImage.owner_id)
         db.run((images returning images.map(_.id)) += row)
       }
-    } yield { Created(id) }
+    } yield { ImageModels.Created(id, publicURI) }
   }
 }

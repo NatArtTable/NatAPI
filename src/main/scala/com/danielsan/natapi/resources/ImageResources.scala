@@ -1,7 +1,7 @@
 package com.danielsan.natapi.resources
 
 import com.danielsan.natapi.helpers.FileHandler
-import com.danielsan.natapi.models.Image
+import com.danielsan.natapi.models.{Image, ImageModels}
 
 object ImageResources {
 
@@ -16,4 +16,10 @@ object ImageResources {
   }
 
   case class Create(file: FileHandler, description: Option[String], tags: Option[Seq[String]])
+
+  case class Created(id: Long, public_uri: String)
+  object Created {
+    def apply(image: ImageModels.Created): Created = Created(image.id, image.public_uri)
+
+  }
 }

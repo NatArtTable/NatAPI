@@ -204,5 +204,21 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       assert(result.isRight)
       assert(result.right.get.isInstanceOf[Service.InvalidParametersException])
     }
+
+    it("should return the correct public_url after uploading a image") {
+      val file = stub[FileHandler]
+
+      (file.fileType _).when().returns(FileHandler.PNG)
+      (file.getFilePath _).when().returns(Paths.get("tmpFile"))
+
+      val cloudinary = mockCloudinaryUpload("http://public/url")
+      server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
+
+      val newImage = ImageResources.Create(file, Some("xablau"), Some(Seq("1")))
+      val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
+
+      assert(result.isLeft)
+      assert(result.left.get.public_uri == "http://public/url")
+    }
   }
 }

@@ -3,7 +3,7 @@ package com.danielsan.natapi.controllers
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import io.finch._
-import com.danielsan.natapi.resources.{CreatedResource, ImageResources, SearchResource}
+import com.danielsan.natapi.resources.{ImageResources, SearchResource}
 import com.danielsan.natapi.services.ImageService
 import com.danielsan.natapi.filters.Authentication
 import com.danielsan.natapi.resources.AuthResource.Payload
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import shapeless.{:+:, CNil}
 
 class ImageController(implicit service: ImageService, implicit val authentication: Authentication)
-    extends Controller[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: CreatedResource :+: CNil] {
+    extends Controller[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: ImageResources.Created :+: CNil] {
   private val log = LoggerFactory.getLogger(this.getClass)
 
   private val getImage: Endpoint[ImageResources.Full] = get(authentication.authenticated :: "image" :: path[Long]) { (payload: Payload, id: Long) =>
@@ -33,7 +33,7 @@ class ImageController(implicit service: ImageService, implicit val authenticatio
     result.asTwitter
   }
 
-  private val uploadImage: Endpoint[CreatedResource] = post(
+  private val uploadImage: Endpoint[ImageResources.Created] = post(
     authentication.authenticated ::
       "image" :: "upload" ::
       fileUploadOption("image") ::
@@ -68,5 +68,5 @@ class ImageController(implicit service: ImageService, implicit val authenticatio
     }
   }
 
-  override protected def endpoints: Endpoint[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: CreatedResource :+: CNil] = getImage :+: getImages :+: uploadImage
+  override protected def endpoints: Endpoint[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: ImageResources.Created :+: CNil] = getImage :+: getImages :+: uploadImage
 }

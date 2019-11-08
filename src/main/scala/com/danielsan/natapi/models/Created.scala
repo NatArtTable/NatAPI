@@ -1,3 +1,5 @@
 package com.danielsan.natapi.models
 
-case class Created(id: Long)
+trait Created {
+  val id: Long
+}

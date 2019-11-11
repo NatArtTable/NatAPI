@@ -9,4 +9,5 @@ trait ImageRepository extends Repository {
   def getAllByOwnerId(owner_id: Long): Future[Seq[Image]]
 
   def create(newImage: ImageModels.New): Future[ImageModels.Created]
+  def deleteById(id: Long): Future[Int]
 }

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import shapeless.{:+:, CNil}
 
 class ImageController(implicit service: ImageService, implicit val authentication: Authentication)
-    extends Controller[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: ImageResources.Created :+: CNil] {
+    extends Controller[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: ImageResources.Created :+: ImageResources.Deleted :+: CNil] {
   private val log = LoggerFactory.getLogger(this.getClass)
 
   private val getImage: Endpoint[ImageResources.Full] = get(authentication.authenticated :: "image" :: path[Long]) { (payload: Payload, id: Long) =>
@@ -31,6 +31,17 @@ class ImageController(implicit service: ImageService, implicit val authenticatio
     }
 
     result.asTwitter
+  }
+
+  private val deleteImage: Endpoint[ImageResources.Deleted] = delete(authentication.authenticated :: "image" :: path[Long]) { (payload: Payload, id: Long) =>
+    {
+      val result = service.deleteById(id)(payload) map {
+        case Left(response) => Ok(response)
+        case Right(ex)      => throw ex
+      }
+
+      result.asTwitter
+    }
   }
 
   private val uploadImage: Endpoint[ImageResources.Created] = post(
@@ -68,5 +79,6 @@ class ImageController(implicit service: ImageService, implicit val authenticatio
     }
   }
 
-  override protected def endpoints: Endpoint[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: ImageResources.Created :+: CNil] = getImage :+: getImages :+: uploadImage
+  override protected def endpoints: Endpoint[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: ImageResources.Created :+: ImageResources.Deleted :+: CNil] =
+    getImage :+: getImages :+: uploadImage :+: deleteImage
 }

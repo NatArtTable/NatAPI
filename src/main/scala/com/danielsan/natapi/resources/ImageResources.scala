@@ -20,6 +20,7 @@ object ImageResources {
   case class Created(id: Long, public_uri: String)
   object Created {
     def apply(image: ImageModels.Created): Created = Created(image.id, image.public_uri)
-
   }
+
+  case class Deleted(id: Long)
 }

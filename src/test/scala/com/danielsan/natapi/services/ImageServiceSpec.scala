@@ -221,4 +221,45 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       assert(result.left.get.public_uri == "http://public/url")
     }
   }
+
+  describe("test deleteById service") {
+    it("the owner should be able to delete his image successfully") {
+      val result = Await.result(server.imageService.deleteById(danielImage.id)(Payload(daniel)), 5.seconds)
+
+      assert(result.isLeft)
+      assert(result.left.get.id == danielImage.id)
+    }
+
+    it("acessing a deleted image should return a NotFoundException") {
+      Await.result(server.imageService.deleteById(danielImage.id)(Payload(daniel)), 5.seconds)
+
+      val result = Await.result(server.imageService.getById(danielImage.id)(Payload(daniel)), 5.seconds)
+
+      assert(result.isRight)
+      assert(result.right.get.isInstanceOf[Service.NotFoundException])
+    }
+
+    it("should return a PermissionDeniedException if a user try to delete another user image") {
+      val result = Await.result(server.imageService.deleteById(danielImage.id)(Payload(jujuba)), 5.seconds)
+
+      assert(result.isRight)
+      assert(result.right.get.isInstanceOf[Service.PermissionDeniedException])
+    }
+
+    it("the image should still be accessible if a user try to delete another user image") {
+      Await.result(server.imageService.deleteById(danielImage.id)(Payload(jujuba)), 5.seconds)
+
+      val result = Await.result(server.imageService.getById(danielImage.id)(Payload(daniel)), 5.seconds)
+
+      assert(result.isLeft)
+      assert(result.left.get === ImageResources.Full(danielImage))
+    }
+
+    it("should return a NotFoundException if a user try to delete a non-existing image") {
+      val result = Await.result(server.imageService.deleteById(42)(Payload(daniel)), 5.seconds)
+
+      assert(result.isRight)
+      assert(result.right.get.isInstanceOf[Service.NotFoundException])
+    }
+  }
 }

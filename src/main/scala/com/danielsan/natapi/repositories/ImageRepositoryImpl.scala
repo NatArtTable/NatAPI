@@ -34,4 +34,9 @@ class ImageRepositoryImpl(implicit db: Database, implicit val images: TableQuery
       }
     } yield { ImageModels.Created(id, publicURI) }
   }
+
+  override def deleteById(id: Long): Future[Int] = {
+    val q = images.filter(_.id === id)
+    db.run(q.delete)
+  }
 }

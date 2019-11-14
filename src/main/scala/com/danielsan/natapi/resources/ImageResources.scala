@@ -5,17 +5,17 @@ import com.danielsan.natapi.models.{Image, ImageModels}
 
 object ImageResources {
 
-  case class Small(id: Long, public_uri: String)
+  case class Small(id: Long, public_uri: String, width: Int, height: Int)
   object Small {
-    def apply(image: Image): Small = Small(image.id, image.public_uri)
+    def apply(image: Image): Small = Small(image.id, image.public_uri, image.width, image.height)
   }
 
-  case class Full(id: Long, public_uri: String, description: String, tags: Seq[String])
+  case class Full(id: Long, public_uri: String, description: String, tags: Seq[String], width: Int, height: Int)
   object Full {
-    def apply(image: Image): Full = Full(image.id, image.public_uri, image.description, image.tags)
+    def apply(image: Image): Full = Full(image.id, image.public_uri, image.description, image.tags, image.width, image.height)
   }
 
-  case class Create(file: FileHandler, description: Option[String], tags: Option[Seq[String]])
+  case class Create(file: FileHandler, description: Option[String], tags: Option[Seq[String]], width: Int, height: Int)
 
   case class Created(id: Long, public_uri: String)
   object Created {

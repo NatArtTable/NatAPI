@@ -27,9 +27,9 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
     daniel = server.addUser(User(-1, "daniel", "daniel@mail.com", "1234"))
     jujuba = server.addUser(User(-1, "jujuba", "jujuba@mail.com", "4321"))
 
-    danielImage = server.addImage(Image(-1, "descricao", Seq("tag1", "tag2"), "some/place.jpg", "uri", daniel.id))
-    danielOtherImage = server.addImage(Image(-1, "outra descricao", Seq("tag134", "tag2"), "another/place.jpg", "loko", daniel.id))
-    jujubaImage = server.addImage(Image(-1, "better description", Seq("tag1", "other_tag"), "other/place.jpg", "random_string", jujuba.id))
+    danielImage = server.addImage(Image(-1, "descricao", Seq("tag1", "tag2"), "some/place.jpg", "uri", daniel.id, 100, 100))
+    danielOtherImage = server.addImage(Image(-1, "outra descricao", Seq("tag134", "tag2"), "another/place.jpg", "loko", daniel.id, 100, 100))
+    jujubaImage = server.addImage(Image(-1, "better description", Seq("tag1", "other_tag"), "other/place.jpg", "random_string", jujuba.id, 100, 100))
   }
 
   describe("test getById service for images") {
@@ -37,7 +37,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val result = Await.result(server.imageService.getById(danielImage.id)(Payload(daniel)), 5.seconds)
 
       assert(result.isLeft)
-      assert(result.left.get == ImageResources.Full(danielImage.id, "uri", "descricao", Seq("tag1", "tag2")))
+      assert(result.left.get == ImageResources.Full(danielImage.id, "uri", "descricao", Seq("tag1", "tag2"), 100, 100))
     }
 
     it("should return a PermissionDeniedException if a user tries to get a image of another user") {
@@ -81,7 +81,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val cloudinary = mockCloudinaryUpload("http://public/url")
       server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
-      val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")))
+      val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")), 100, 100)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
 
       assert(result.isLeft)
@@ -96,7 +96,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val cloudinary = mockCloudinaryUpload("http://public/url")
       server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
-      val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")))
+      val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")), 100, 100)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
 
       assert(result.isLeft)
@@ -117,7 +117,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val cloudinary = mockCloudinaryUpload("http://public/url")
       server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
-      val newImage = ImageResources.Create(file, None, Some(Seq("tag1", "tag2", "tag3")))
+      val newImage = ImageResources.Create(file, None, Some(Seq("tag1", "tag2", "tag3")), 100, 100)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
 
       assert(result.isLeft)
@@ -137,7 +137,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val cloudinary = mockCloudinaryUpload("http://public/url")
       server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
-      val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")))
+      val newImage = ImageResources.Create(file, Some("description"), Some(Seq("tag1", "tag2", "tag3")), 100, 100)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
 
       assert(result.isLeft)
@@ -158,7 +158,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val cloudinary = mockCloudinaryUpload("http://public/url")
       server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
-      val newImage = ImageResources.Create(file, Some("xablau"), None)
+      val newImage = ImageResources.Create(file, Some("xablau"), None, 100, 100)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
 
       assert(result.isLeft)
@@ -178,7 +178,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val cloudinary = mockCloudinaryUpload("http://public/url")
       server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
-      val newImage = ImageResources.Create(file, None, Some(Seq("tag1", "tag2", "tag3")))
+      val newImage = ImageResources.Create(file, None, Some(Seq("tag1", "tag2", "tag3")), 100, 100)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
 
       assert(result.isLeft)
@@ -198,7 +198,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val cloudinary = mockCloudinaryUpload("http://public/url")
       server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
-      val newImage = ImageResources.Create(file, Some("xablau"), Some(Seq("1")))
+      val newImage = ImageResources.Create(file, Some("xablau"), Some(Seq("1")), 100, 100)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
 
       assert(result.isRight)
@@ -214,7 +214,7 @@ class ImageServiceSpec extends BaseSpec with MockFactory with OneInstancePerTest
       val cloudinary = mockCloudinaryUpload("http://public/url")
       server.fileRepository.asInstanceOf[FileRepositoryImpl].cloudinary = cloudinary
 
-      val newImage = ImageResources.Create(file, Some("xablau"), Some(Seq("1")))
+      val newImage = ImageResources.Create(file, Some("xablau"), Some(Seq("1")), 100, 100)
       val result = Await.result(server.imageService.create(newImage)(Payload(jujuba)), 5.second)
 
       assert(result.isLeft)

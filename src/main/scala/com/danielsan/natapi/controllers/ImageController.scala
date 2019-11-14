@@ -1,5 +1,8 @@
 package com.danielsan.natapi.controllers
 
+import com.danielsan.natapi
+import com.danielsan.natapi.controllers
+
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import io.finch._
@@ -10,6 +13,8 @@ import com.danielsan.natapi.resources.AuthResource.Payload
 import com.twitter.finagle.http.exp.Multipart.FileUpload
 import org.slf4j.LoggerFactory
 import shapeless.{:+:, CNil}
+
+import scala.util.Try
 
 class ImageController(implicit service: ImageService, implicit val authentication: Authentication)
     extends Controller[ImageResources.Full :+: SearchResource[ImageResources.Small] :+: ImageResources.Created :+: ImageResources.Deleted :+: CNil] {
@@ -49,9 +54,20 @@ class ImageController(implicit service: ImageService, implicit val authenticatio
       "image" :: "upload" ::
       fileUploadOption("image") ::
       paramOption("description") ::
-      paramOption("tags")
-  ) { (payload: Payload, image: Option[FileUpload], description: Option[String], tags: Option[String]) =>
+      paramOption("tags") ::
+      paramOption("width") ::
+      paramOption("height")
+  ) { (payload: Payload, image: Option[FileUpload], description: Option[String], tags: Option[String], width: Option[String], height: Option[String]) =>
     log.debug(s"Image upload route has been called by a user with id ${payload.id}.")
+
+    if (width.isEmpty) throw new Controller.MissingParameterException("Missing width!")
+    if (height.isEmpty) throw new Controller.MissingParameterException("Missing height!")
+
+    val widthInt = Try(width.get.toInt)
+    val heightInt = Try(height.get.toInt)
+
+    if (widthInt.isFailure) throw new Controller.InvalidParametersException("Width should be a integer!")
+    if (heightInt.isFailure) throw new Controller.InvalidParametersException("Height should be a integer!")
 
     image match {
       case Some(file) => {
@@ -62,7 +78,7 @@ class ImageController(implicit service: ImageService, implicit val authenticatio
         }
 
         log.debug("Trying to persist image via ImageService")
-        val result = service.create(ImageResources.Create(file, description, parsedTags))(payload) map {
+        val result = service.create(ImageResources.Create(file, description, parsedTags, widthInt.get, heightInt.get))(payload) map {
           case Left(created) =>
             log.debug("Image persisted! Responding status Ok")
             Ok(created)

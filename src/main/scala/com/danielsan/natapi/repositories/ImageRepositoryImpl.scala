@@ -14,14 +14,14 @@ class ImageRepositoryImpl(implicit db: Database, implicit val images: TableQuery
 
   def getById(id: Long): Future[Option[Image]] = {
     db.run(images.filter(_.id === id).result.map(_.headOption)).map {
-      case Some(row) => Some(Image(row.id, row.description, row.tags, row.original_uri, row.public_uri, row.owner_id))
+      case Some(row) => Some(Image(row.id, row.description, row.tags, row.original_uri, row.public_uri, row.owner_id, row.width, row.height))
       case None      => None
     }
   }
 
   override def getAllByOwnerId(owner_id: Long): Future[Seq[Image]] = {
     db.run(images.filter(_.owner_id === owner_id).result).map { rows =>
-      rows.map(row => Image(row.id, row.description, row.tags, row.original_uri, row.public_uri, row.owner_id))
+      rows.map(row => Image(row.id, row.description, row.tags, row.original_uri, row.public_uri, row.owner_id, row.width, row.height))
     }
   }
 
@@ -29,7 +29,7 @@ class ImageRepositoryImpl(implicit db: Database, implicit val images: TableQuery
     for {
       publicURI <- fileRepository.save(newImage.file)
       id <- {
-        val row = Image(1, newImage.description, newImage.tags, "", publicURI, newImage.owner_id)
+        val row = Image(1, newImage.description, newImage.tags, "", publicURI, newImage.owner_id, newImage.width, newImage.height)
         db.run((images returning images.map(_.id)) += row)
       }
     } yield { ImageModels.Created(id, publicURI) }

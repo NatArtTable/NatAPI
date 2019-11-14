@@ -39,7 +39,7 @@ class ImageServiceImpl(implicit repository: ImageRepository) extends ImageServic
         Right(new Service.InvalidParametersException("image type not supported. Supported image types: jpg, png."))
       }
 
-    val newImage = ImageModels.New(image.file, image.description.getOrElse(""), image.tags.getOrElse(Seq()), payload.id)
+    val newImage = ImageModels.New(image.file, image.description.getOrElse(""), image.tags.getOrElse(Seq()), payload.id, image.width, image.height)
     repository.create(newImage) map { created =>
       Left(ImageResources.Created(created))
     }
